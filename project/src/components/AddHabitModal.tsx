@@ -110,8 +110,8 @@ export const AddHabitModal: React.FC<AddHabitModalProps> = ({ isOpen, onClose, o
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-none">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full max-h-[90vh]  template-scroll overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             Add New Habit
@@ -143,7 +143,7 @@ export const AddHabitModal: React.FC<AddHabitModalProps> = ({ isOpen, onClose, o
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Choose an Emoji
             </label>
-            <div className="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto">
+            <div className="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto template-scroll">
               {EMOJI_OPTIONS.map((emoji) => (
                 <button
                   key={emoji}
