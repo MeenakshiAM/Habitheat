@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
 import { HabitDetail } from './components/HabitDetail';
@@ -9,6 +9,7 @@ import { ChallengesView } from './components/ChallengesView';
 import { MoodTracker } from './components/MoodTracker';
 import { HabitTemplatesView } from './components/HabitTemplatesView';
 import { AchievementNotification } from './components/AchievementNotification';
+import NotFound from './components/NotFound';
 import { useHabits } from './hooks/useHabits';
 import { useTheme } from './hooks/useTheme';
 import { Habit, View, HabitTemplate } from './types';
@@ -38,12 +39,84 @@ function App() {
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  // URL-based routing for production/vercel
+  useEffect(() => {
+    const handleRouting = () => {
+      const path = window.location.pathname;
+      const validRoutes = [
+        '/',
+        '/dashboard',
+        '/insights', 
+        '/achievements',
+        '/challenges',
+        '/mood',
+        '/templates'
+      ];
+
+      if (path === '/' || path === '/dashboard') {
+        setCurrentView('dashboard');
+      } else if (path === '/insights') {
+        setCurrentView('insights');
+      } else if (path === '/achievements') {
+        setCurrentView('achievements');
+      } else if (path === '/challenges') {
+        setCurrentView('challenges');
+      } else if (path === '/mood') {
+        setCurrentView('mood');
+      } else if (path === '/templates') {
+        setCurrentView('templates');
+      } else if (!validRoutes.includes(path)) {
+        setCurrentView('not-found');
+      }
+    };
+
+    handleRouting();
+
+    const handlePopState = () => {
+      handleRouting();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateToView = (view: Exclude<View, 'not-found' | 'habit-detail' | 'add-habit' | 'social'>) => {
+    const routes: Record<string, string> = {
+      dashboard: '/',
+      insights: '/insights',
+      achievements: '/achievements', 
+      challenges: '/challenges',
+      mood: '/mood',
+      templates: '/templates'
+    };
+    
+    const path = routes[view];
+    if (path) {
+      window.history.pushState({}, '', path);
+      setCurrentView(view);
+    }
+  };
+
+  const getHeaderView = (view: View): 'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates' => {
+    if (['not-found', 'habit-detail', 'add-habit', 'social'].includes(view)) {
+      return 'dashboard';
+    }
+    return view as 'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates';
+  };
+
+  const handleNavigateHome = () => {
+    window.history.pushState({}, '', '/');
+    setCurrentView('dashboard');
+    setSelectedHabit(null);
+  };
+
   const handleHabitClick = (habit: Habit) => {
     setSelectedHabit(habit);
     setCurrentView('habit-detail');
   };
 
   const handleBackToDashboard = () => {
+    window.history.pushState({}, '', '/');
     setCurrentView('dashboard');
     setSelectedHabit(null);
   };
@@ -69,7 +142,7 @@ function App() {
 
   const handleUseTemplate = (template: HabitTemplate) => {
     addHabitFromTemplate(template);
-    setCurrentView('dashboard');
+    handleNavigateHome();
   };
 
   const handleDeleteHabit = () => {
@@ -139,11 +212,15 @@ function App() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <Header 
         theme={theme} 
-        currentView={currentView}
+        currentView={getHeaderView(currentView)}
         onThemeToggle={toggleTheme}
-        onViewChange={setCurrentView}
+        onViewChange={(view) => navigateToView(view)}
       />
       
+      {currentView === 'not-found' && (
+        <NotFound onNavigateHome={handleNavigateHome} />
+      )}
+
       {currentView === 'dashboard' && (
         <Dashboard
           habits={habits}
