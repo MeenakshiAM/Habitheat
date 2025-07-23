@@ -87,13 +87,17 @@ export const useHabits = () => {
     saveToStorage(updatedHabits);
   }, [habits, saveToStorage]);
 
-  const archiveHabit = useCallback((id: string) => {
-    updateHabit(id, { isArchived: true });
-  }, [updateHabit]);
-
-  const unarchiveHabit = useCallback((id: string) => {
-    updateHabit(id, { isArchived: false });
-  }, [updateHabit]);
+  const archiveHabit = useCallback((id: string, shouldArchive?: boolean) => {
+    setHabits(prev => {
+      const updated = prev.map(habit =>
+        habit.id === id
+          ? { ...habit, isArchived: shouldArchive !== undefined ? shouldArchive : !habit.isArchived }
+          : habit
+      );
+      saveHabits(updated);
+      return updated;
+    });
+  }, []);
 
   const toggleHabitCompletion = useCallback((habitId: string, date: string) => {
     const updatedHabits = habits.map(habit => {
@@ -186,7 +190,6 @@ export const useHabits = () => {
     updateHabit,
     deleteHabit,
     archiveHabit,
-    unarchiveHabit,
     toggleHabitCompletion,
     markTodayComplete,
     addNote,

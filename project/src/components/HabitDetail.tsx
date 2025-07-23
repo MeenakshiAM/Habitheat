@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Trash2, StickyNote, Archive } from 'lucide-react';
+import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Trash2, StickyNote, Archive, ArchiveRestore } from 'lucide-react';
 import { Habit } from '../types';
 import { Heatmap } from './Heatmap';
 import { HabitStats } from './HabitStats';
@@ -58,7 +58,7 @@ export const HabitDetail: React.FC<HabitDetailProps> = ({
   };
 
   const handleArchive = () => {
-    if (window.confirm('Are you sure you want to archive this habit? You can restore it later.')) {
+    if (window.confirm(`Are you sure you want to ${habit.isArchived ? 'unarchive' : 'archive'} this habit?`)) {
       onArchive();
     }
   };
@@ -103,7 +103,11 @@ export const HabitDetail: React.FC<HabitDetailProps> = ({
             className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             title="Archive habit"
           >
-            <Archive className="w-5 h-5" />
+            {habit.isArchived ? (
+                <ArchiveRestore className="w-4 h-4" />
+              ) : (
+                <Archive className="w-4 h-4" /> 
+            )}
           </button>
           <button
             onClick={handleDelete}
