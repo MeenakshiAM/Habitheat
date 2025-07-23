@@ -164,7 +164,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {/* NEW: Widgets Section with Settings Button */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h2>
-        <SelfCareTip/>
         <button
           onClick={() => setShowWidgetSettings(true)}
           className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -173,7 +172,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <Settings className="w-5 h-5" />
         </button>
       </div>
-
+      <div className="flex justify-center">
+        <SelfCareTip/>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {enabledWidgets.includes(WIDGET_IDS.CURRENT_STREAK) && (
           <CurrentStreakWidget longestStreak={longestStreak} />
