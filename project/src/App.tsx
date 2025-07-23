@@ -155,8 +155,12 @@ function App() {
   const handleArchiveHabit = (habitId?: string) => {
     const targetHabitId = habitId || selectedHabit?.id;
     if (targetHabitId) {
-      archiveHabit(targetHabitId);
-      if (selectedHabit && targetHabitId === selectedHabit.id) {
+      const habit = habits.find(h => h.id === targetHabitId);
+      if(!habit) return;
+
+      archiveHabit(targetHabitId, !habit.isArchived);
+
+      if(selectedHabit && targetHabitId === selectedHabit.id) {
         handleBackToDashboard();
       }
     }

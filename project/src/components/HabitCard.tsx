@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Target, Zap, Archive, MoreVertical } from 'lucide-react';
+import { Calendar, Target, Zap, Archive, ArchiveRestore } from 'lucide-react';
 import { Habit } from '../types';
 import { MiniHeatmap } from './MiniHeatmap';
 import { calculateHabitStats } from '../utils/habitStats';
@@ -18,7 +18,6 @@ export const HabitCard: React.FC<HabitCardProps> = ({
   onClick, 
   onMarkToday, 
   onArchive,
-  showArchiveButton = true 
 }) => {
   const stats = calculateHabitStats(habit);
   const today = formatDate(new Date());
@@ -74,13 +73,17 @@ export const HabitCard: React.FC<HabitCardProps> = ({
         </div>
         
         <div className="flex items-center gap-2">
-          {showArchiveButton && onArchive && (
+          { onArchive && (
             <button
               onClick={handleArchive}
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-              title="Archive habit"
+              title={habit.isArchived ? 'Unarchive habit' : 'Archive habit'}
             >
-              <Archive className="w-4 h-4" />
+              {habit.isArchived ? (
+                <ArchiveRestore className="w-4 h-4" />
+              ) : (
+                <Archive className="w-4 h-4" /> 
+              )}
             </button>
           )}
           
