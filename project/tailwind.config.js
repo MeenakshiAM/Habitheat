@@ -10,6 +10,7 @@ export default {
       animation: {
         'scale-in': 'scaleIn 0.2s ease-out',
         'fade-in': 'fadeIn 0.3s ease-out',
+        'shine': 'shine 3s linear infinite',
       },
       keyframes: {
         scaleIn: {
@@ -20,6 +21,10 @@ export default {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
         },
+        shine: { // 👈 Added this block
+          '0%': { backgroundPosition: '0% 50%' },
+          '100%': { backgroundPosition: '100% 50%' },
+          },
       },
     },
   },
