@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { Plus, Filter, Search, Archive } from 'lucide-react';
+import React, { useState, useEffect } from 'react'; // Import useEffect
+import { Plus, Filter, Search, Archive, Settings } from 'lucide-react'; // Import Settings icon
 import { Habit, SortOption, FilterOption } from '../types';
 import { HabitCard } from './HabitCard';
 import { QuickActions } from './QuickActions';
+
+// IMPORTS FOR YOUR WIDGETS
+import CurrentStreakWidget from './widgets/CurrentStreakWidget';
+import DailyCompletionRateWidget from './widgets/DailyCompletionRateWidget';
+import TotalHabitsCompletedWidget from './widgets/TotalHabitsCompletedWidget';
+// NEW IMPORT FOR WIDGET SETTINGS MODAL
+import WidgetSettingsModal from './WidgetSettingsModal'; // Adjust path if you put it in widgets/
 
 interface DashboardProps {
   habits: Habit[];
@@ -11,6 +18,13 @@ interface DashboardProps {
   onMarkToday: (habitId: string) => void;
   onArchiveHabit: (habitId: string) => void;
 }
+
+// Define IDs for your widgets (MUST match 'id' in WidgetSettingsModal.tsx's availableWidgets)
+const WIDGET_IDS = {
+    CURRENT_STREAK: 'currentStreak',
+    DAILY_COMPLETION: 'dailyCompletion',
+    TOTAL_COMPLETED: 'totalCompleted',
+};
 
 export const Dashboard: React.FC<DashboardProps> = ({
   habits,
@@ -23,6 +37,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [sortBy, setSortBy] = useState<SortOption>('name');
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
   const [showArchived, setShowArchived] = useState(false);
+
+  // NEW STATE FOR WIDGET CUSTOMIZATION
+  const [showWidgetSettings, setShowWidgetSettings] = useState(false);
+  // Initialize enabledWidgets from localStorage or with defaults
+  const [enabledWidgets, setEnabledWidgets] = useState<string[]>(() => {
+    const savedWidgets = localStorage.getItem('enabledWidgets');
+    return savedWidgets ? JSON.parse(savedWidgets) : [
+        WIDGET_IDS.CURRENT_STREAK,
+        WIDGET_IDS.DAILY_COMPLETION,
+        WIDGET_IDS.TOTAL_COMPLETED // Default: all three enabled
+    ];
+  });
+
+  // NEW useEffect to save enabled widgets to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('enabledWidgets', JSON.stringify(enabledWidgets));
+  }, [enabledWidgets]);
 
   const activeHabits = habits.filter(h => !h.isArchived);
   const archivedHabits = habits.filter(h => h.isArchived);
@@ -75,8 +106,96 @@ export const Dashboard: React.FC<DashboardProps> = ({
       }
     });
 
+  // --- Calculate data for widgets based on 'habits' prop ---
+  const calculateLongestStreak = (habits: Habit[]): number => {
+    let overallLongestStreak = 0;
+    habits.forEach(habit => {
+      let currentStreak = 0;
+      let maxStreakForHabit = 0;
+      const sortedDates = Object.keys(habit.logs).sort();
+
+      for (let i = 0; i < sortedDates.length; i++) {
+        const date = sortedDates[i];
+        if (habit.logs[date]) { // If habit was completed on this date
+          currentStreak++;
+        } else {
+          currentStreak = 0; // Reset streak if missed
+        }
+        maxStreakForHabit = Math.max(maxStreakForHabit, currentStreak);
+      }
+      overallLongestStreak = Math.max(overallLongestStreak, maxStreakForHabit);
+    });
+    return overallLongestStreak;
+  };
+
+  const calculateDailyCompletion = (habits: Habit[]): { completed: number; total: number } => {
+    const today = new Date().toISOString().split('T')[0];
+    const habitsForToday = habits.filter(h => !h.isArchived); 
+    const completedToday = habitsForToday.filter(h => h.logs[today] === true).length;
+    return { completed: completedToday, total: habitsForToday.length };
+  };
+
+  const calculateTotalCompletedHabits = (habits: Habit[]): number => {
+    let count = 0;
+    habits.forEach(habit => {
+      count += Object.values(habit.logs).filter(Boolean).length;
+    });
+    return count;
+  };
+
+  const longestStreak = calculateLongestStreak(habits);
+  const { completed: completedHabitsToday, total: totalHabitsToday } = calculateDailyCompletion(habits);
+  const totalCompletedHabits = calculateTotalCompletedHabits(habits);
+  // --- END CALCULATIONS ---
+
+  // NEW: Function to toggle widget
+  const handleToggleWidget = (widgetId: string, isEnabled: boolean) => {
+    setEnabledWidgets(prev => 
+      isEnabled 
+        ? [...prev, widgetId] 
+        : prev.filter(id => id !== widgetId)
+    );
+  };
+
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+      {/* NEW: Widgets Section with Settings Button */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h2>
+        <button
+          onClick={() => setShowWidgetSettings(true)}
+          className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          title="Manage Widgets"
+        >
+          <Settings className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {enabledWidgets.includes(WIDGET_IDS.CURRENT_STREAK) && (
+          <CurrentStreakWidget longestStreak={longestStreak} />
+        )}
+        {enabledWidgets.includes(WIDGET_IDS.DAILY_COMPLETION) && (
+          <DailyCompletionRateWidget 
+            completedHabitsToday={completedHabitsToday} 
+            totalHabitsToday={totalHabitsToday} 
+          />
+        )}
+        {enabledWidgets.includes(WIDGET_IDS.TOTAL_COMPLETED) && (
+          <TotalHabitsCompletedWidget totalCompletedHabits={totalCompletedHabits} />
+        )}
+      </div>
+      {/* END NEW: Widgets Section */}
+
+      {/* Widget Settings Modal */}
+      <WidgetSettingsModal
+        isOpen={showWidgetSettings}
+        onClose={() => setShowWidgetSettings(false)}
+        enabledWidgets={enabledWidgets}
+        onToggleWidget={handleToggleWidget}
+      />
+
       {/* Quick Actions */}
       {!showArchived && (
         <QuickActions 
