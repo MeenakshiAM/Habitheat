@@ -1,3 +1,4 @@
+import SelfCareTip from "./SelfCareTip";
 import React, { useState, useEffect } from 'react'; // Import useEffect
 import { Plus, Filter, Search, Archive, Settings } from 'lucide-react'; // Import Settings icon
 import { Habit, SortOption, FilterOption } from '../types';
@@ -171,7 +172,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <Settings className="w-5 h-5" />
         </button>
       </div>
-
+      <div className="flex justify-center">
+        <SelfCareTip/>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {enabledWidgets.includes(WIDGET_IDS.CURRENT_STREAK) && (
           <CurrentStreakWidget longestStreak={longestStreak} />
