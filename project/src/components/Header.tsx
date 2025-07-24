@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence} from 'framer-motion';
-import { Moon, Sun, Flame, BarChart3, Trophy, Settings, Target, Smile, BookOpen, Menu, X, ArrowLeft } from 'lucide-react';
+import { Moon, Sun, Flame, BarChart3, Trophy, Settings, Target, Smile, BookOpen, Menu, X, ArrowLeft,User } from 'lucide-react';
 
 // Types
 type Theme = 'light' | 'dark';
-type View = 'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates';
+type View = 'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates' | 'profile';
 
 interface HeaderProps {
   theme: Theme;
@@ -25,7 +25,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
     { view: 'achievements' as View, icon: Trophy, label: 'Achievements' },
     { view: 'challenges' as View, icon: Target, label: 'Challenges' },
     { view: 'mood' as View, icon: Smile, label: 'Mood' },
-    { view: 'templates' as View, icon: BookOpen, label: 'Templates' }
+    { view: 'templates' as View, icon: BookOpen, label: 'Templates' },
+    { view: 'profile' as View, icon: User, label: 'Profile'},
   ];
 
   // Handle outside click to close mobile menu
