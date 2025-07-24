@@ -8,6 +8,23 @@ interface MoodTrackerProps {
   onAddMood: (mood: Mood) => void;
 }
 
+const getIntensityGradient = (label: string, rating: number) => {
+  if (label === "Stress Level") {
+    if (rating === 5) return "bg-gradient-to-r from-red-500 to-red-700";
+    if (rating === 4) return "bg-gradient-to-r from-orange-400 to-red-500";
+    if (rating === 3) return "bg-gradient-to-r from-yellow-200 to-orange-400";
+    if (rating === 2) return "bg-gradient-to-r from-green-600 to-yellow-200";
+    return "bg-gradient-to-r from-green-500 to-green-700";
+  } else {
+    if (rating === 1) return "bg-gradient-to-r from-red-700 to-red-500";
+    if (rating === 2) return "bg-gradient-to-r from-red-500 to-orange-400";
+    if (rating === 3) return "bg-gradient-to-r from-orange-300 to-yellow-200";
+    if (rating === 4) return "bg-gradient-to-r from-yellow-200 to-green-600";
+    return "bg-gradient-to-r from-green-600 to-green-500";
+  }
+};
+
+
 export const MoodTracker: React.FC<MoodTrackerProps> = ({ moods, onAddMood }) => {
   const [selectedMood, setSelectedMood] = useState<number>(3);
   const [energy, setEnergy] = useState<number>(3);
@@ -38,17 +55,17 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({ moods, onAddMood }) =>
     onChange, 
     label, 
     icon: Icon, 
-    color 
   }: { 
     value: number; 
     onChange: (value: number) => void; 
     label: string; 
     icon: any; 
-    color: string;
   }) => (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <Icon className={`w-5 h-5 ${color}`} />
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getIntensityGradient(label, value)}`}>
+            <Icon className="w-4 h-4 text-white" />
+        </div>
         <span className="font-medium text-gray-900 dark:text-white">{label}</span>
       </div>
       <div className="flex items-center gap-4">
@@ -60,7 +77,7 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({ moods, onAddMood }) =>
               onClick={() => onChange(rating)}
               className={`flex-1 h-8 rounded-lg transition-all ${
                 value >= rating 
-                  ? `${color.replace('text-', 'bg-').replace('-500', '-500')} text-white` 
+                  ? `${getIntensityGradient(label, rating).replace('text-', 'bg-').replace('-500', '-500')} text-white` 
                   : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
               }`}
             />
@@ -113,23 +130,19 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({ moods, onAddMood }) =>
               <div>
                 <div className="flex justify-between items-center mb-4">
                   {moodEmojis.map((emoji, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedMood(index + 1)}
-                      className={`p-4 rounded-2xl transition-all ${
-                        selectedMood === index + 1
-                          ? 'bg-blue-100 dark:bg-blue-900 scale-110 shadow-lg'
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-105'
-                      }`}
-                    >
+                    <div key={index}>
+                    <button onClick={() => setSelectedMood(index + 1)} className={`p-4 rounded-2xl transition-all flex flex-col items-center gap-2 ${selectedMood === index + 1? "bg-blue-100 dark:bg-blue-900 scale-110 shadow-lg": "hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-105"}`}>
                       <span className="text-3xl">{emoji}</span>
                     </button>
+                    <div className="text-center mt-4">
+                    {selectedMood === index + 1 && (
+                        <span className="text-lg font-medium text-gray-900 dark:text-white">
+                          {moodLabels[index]}
+                        </span>
+                      )}
+                    </div>
+                    </div>
                   ))}
-                </div>
-                <div className="text-center">
-                  <span className="text-lg font-medium text-gray-900 dark:text-white">
-                    {moodLabels[selectedMood - 1]}
-                  </span>
                 </div>
               </div>
 
@@ -140,7 +153,6 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({ moods, onAddMood }) =>
                   onChange={setEnergy}
                   label="Energy Level"
                   icon={Zap}
-                  color="text-yellow-500"
                 />
                 
                 <RatingSlider
@@ -148,7 +160,6 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({ moods, onAddMood }) =>
                   onChange={setStress}
                   label="Stress Level"
                   icon={Cloud}
-                  color="text-red-500"
                 />
               </div>
 
