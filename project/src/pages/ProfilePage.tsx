@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   User, 
   Edit3, 
@@ -49,6 +49,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ theme }) => {
     habitsCompleted: 218,
     joinDate: "January 2024"
   };
+
+  // tabtitle
+                useEffect(()=>{
+                  document.title='Habit Heat-My Profile'
+                },[])
 
   const achievements: Achievement[] = [
     {
