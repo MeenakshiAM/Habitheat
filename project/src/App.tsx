@@ -14,6 +14,8 @@ import { useHabits } from './hooks/useHabits';
 import { useTheme } from './hooks/useTheme';
 import { Habit, View, HabitTemplate } from './types';
 import ProfilePage from './pages/ProfilePage';
+import { Footer } from './components/Footer';
+
 
 
 function App() {
@@ -298,6 +300,12 @@ function App() {
         achievements={newAchievements}
         onDismiss={dismissAchievement}
       />
+      <AchievementNotification
+        achievements={newAchievements}
+        onDismiss={dismissAchievement}
+      />
+
+      <Footer /> 
     </div>
   );
 }
