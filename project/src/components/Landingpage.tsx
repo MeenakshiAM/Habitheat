@@ -4,14 +4,10 @@ import {
   BarChart3,
   Trophy,
   Users,
-  Calendar,
   Zap,
-  ChevronLeft,
-  ChevronRight,
   Star,
   Smile , 
   Dumbbell , 
-  Brain , 
   ScrollText
 } from 'lucide-react';
 
@@ -101,15 +97,15 @@ export default function HabitHeatLanding() {
     return () => clearInterval(timer);
   }, []);
 
-  const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
+//   const nextTestimonial = () => {
+//     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+//   };
 
-  const prevTestimonial = () => {
-    setCurrentTestimonial(
-      (prev) => (prev - 1 + testimonials.length) % testimonials.length
-    );
-  };
+//   const prevTestimonial = () => {
+//     setCurrentTestimonial(
+//       (prev) => (prev - 1 + testimonials.length) % testimonials.length
+//     );
+//   };
 
   return (
     <div className="bg-gray-900 text-white">
