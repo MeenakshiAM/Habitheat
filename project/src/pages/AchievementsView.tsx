@@ -62,7 +62,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({ achievements
   const unlockedCount = achievements.length;
   const totalCount = ACHIEVEMENT_DEFINITIONS.length;
   const progressPercentage = (unlockedCount / totalCount) * 100;
-
+  
   // tabtitle
   useEffect(()=>{
     document.title='Habit Heat -Achievements'

@@ -31,6 +31,8 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
           document.title='Habit Heat-Templates'
         },[])
 
+  
+
   if (selectedTemplate) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">

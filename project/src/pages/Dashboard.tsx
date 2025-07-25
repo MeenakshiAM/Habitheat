@@ -1,6 +1,6 @@
 import SelfCareTip from "../components/SelfCareTip";
 import React, { useState, useEffect } from 'react'; // Import useEffect
-import { Plus, Filter, Search, Archive, Settings } from 'lucide-react'; // Import Settings icon
+import { Plus, Search, Archive, Settings } from 'lucide-react'; // Import Settings icon
 import { Habit, SortOption, FilterOption } from '../types';
 import { HabitCard } from '../components/HabitCard';
 import { QuickActions } from '../components/QuickActions';
@@ -39,7 +39,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
   const [showArchived, setShowArchived] = useState(false);
 
-  // tabtitle
+  
+   // tabtitle
       useEffect(()=>{
         document.title='Habit Heat-Track Habits'
       },[])

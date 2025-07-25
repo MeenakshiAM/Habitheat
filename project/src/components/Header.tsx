@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence} from 'framer-motion';
+// import { motion, AnimatePresence} from 'framer-motion';
 import { Moon, Sun, Flame, BarChart3, Trophy, Settings, Target, Smile, BookOpen, Menu, X, ArrowLeft,User } from 'lucide-react';
 
 // Types

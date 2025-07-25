@@ -58,7 +58,8 @@ interface InsightsViewProps {
 export const InsightsView: React.FC<InsightsViewProps> = ({ habits }) => {
   const insights = generateInsights(habits);
 
-  // tabtitle
+
+   // tabtitle
           useEffect(()=>{
             document.title='Habit Heat-Insights'
           },[])

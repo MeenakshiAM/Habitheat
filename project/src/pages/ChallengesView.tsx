@@ -14,7 +14,7 @@ export const ChallengesView: React.FC<ChallengesViewProps> = ({
   habits,
   challenges,
   onStartChallenge,
-  onCompleteChallenge
+  // onCompleteChallenge
 }) => {
   const [availableChallenges, setAvailableChallenges] = useState<Challenge[]>([]);
    

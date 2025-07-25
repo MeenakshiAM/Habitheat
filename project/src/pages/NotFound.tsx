@@ -7,6 +7,7 @@ interface NotFoundProps {
 
 export default function NotFound({ onNavigateHome }: NotFoundProps) {
 
+   
   // tabtitle
               useEffect(()=>{
                 document.title='Habit Heat-Page Not Found'
