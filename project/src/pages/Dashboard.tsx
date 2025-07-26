@@ -17,6 +17,7 @@ interface DashboardProps {
   onAddHabit: () => void;
   onHabitClick: (habit: Habit) => void;
   onMarkToday: (habitId: string) => void;
+  onSaveTemplate: (habit: Habit) => void;
   onArchiveHabit: (habitId: string) => void;
 }
 
@@ -32,7 +33,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onAddHabit,
   onHabitClick,
   onMarkToday,
-  onArchiveHabit
+  onArchiveHabit,
+  onSaveTemplate
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
@@ -334,6 +336,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               habit={habit}
               onClick={() => onHabitClick(habit)}
               onMarkToday={() => onMarkToday(habit.id)}
+              onSaveTemplate={() => onSaveTemplate(habit)}
               onArchive={() => onArchiveHabit(habit.id)}
               showArchiveButton={!showArchived}
             />

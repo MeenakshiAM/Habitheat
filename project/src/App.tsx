@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Dashboard } from './pages/Dashboard';
 import { HabitDetail } from './components/HabitDetail';
 import { AddHabitModal } from './components/AddHabitModal';
+import { SaveAsTemplateModal } from './components/SaveAsTemplateModal';
 import { InsightsView } from './pages/InsightsView';
 import { AchievementsView } from './pages/AchievementsView';
 import { ChallengesView } from './pages/ChallengesView';
@@ -42,6 +43,9 @@ function App() {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSaveTemplateOpen, setIsSaveTemplateOpen] = useState(false);
+  const [habitToSave, setHabitToSave] = useState<Habit | null>(null);
+  const [templates, setTemplates] = useState<HabitTemplate[]>([]);
 
   // URL-based routing for production/vercel
   useEffect(() => {
@@ -160,6 +164,25 @@ function App() {
     }
   };
 
+  const addTemplate = (template: HabitTemplate) => {
+    setTemplates(prev => [...prev, template]);
+  };
+
+  const handleSaveTemplate = (templateData: Omit<HabitTemplate, 'id'>) => {
+    const newTemplate: HabitTemplate = {
+      ...templateData,
+      id: crypto.randomUUID(),
+    };
+    addTemplate(newTemplate);
+    setIsSaveTemplateOpen(false);
+  };
+
+  const handleSaveTemplateClick = (habit: Habit) => {
+    setHabitToSave(habit);
+    setIsSaveTemplateOpen(true);
+  };
+
+
   const handleArchiveHabit = (habitId?: string) => {
     const targetHabitId = habitId || selectedHabit?.id;
     if (targetHabitId) {
@@ -239,9 +262,20 @@ function App() {
           onAddHabit={handleAddHabit}
           onHabitClick={handleHabitClick}
           onMarkToday={handleMarkToday}
+          onSaveTemplate={handleSaveTemplateClick}
           onArchiveHabit={handleArchiveHabit}
         />
       )}
+
+      {habitToSave && (
+        <SaveAsTemplateModal
+          habit={habitToSave}
+          isOpen={isSaveTemplateOpen}
+          onClose={() => setIsSaveTemplateOpen(false)}
+          onSave={handleSaveTemplate}
+        />
+      )}
+
 
       {currentView === 'insights' && (
         <InsightsView habits={habits} />
@@ -271,6 +305,7 @@ function App() {
         <HabitTemplatesView
           onBack={handleBackToDashboard}
           onUseTemplate={handleUseTemplate}
+          customTemplates={templates}
         />
       )}
 
@@ -307,6 +342,7 @@ function App() {
 
       <Footer /> 
     </div>
+
   );
 }
 

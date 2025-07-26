@@ -6,16 +6,18 @@ import { HABIT_TEMPLATES, getTemplatesByCategory } from '../utils/habitTemplates
 interface HabitTemplatesViewProps {
   onBack: () => void;
   onUseTemplate: (template: HabitTemplate) => void;
+  customTemplates: HabitTemplate[];
 }
 
-export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, onUseTemplate }) => {
+export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, onUseTemplate, customTemplates = [] }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTemplate, setSelectedTemplate] = useState<HabitTemplate | null>(null);
 
-  const categories = ['all', ...Array.from(new Set(HABIT_TEMPLATES.map(t => t.category)))];
+  const allTemplates = [...HABIT_TEMPLATES, ...customTemplates];
+  const categories = ['all', ...Array.from(new Set(allTemplates.map(t => t.category)))];
   const filteredTemplates = selectedCategory === 'all' 
-    ? HABIT_TEMPLATES 
-    : getTemplatesByCategory(selectedCategory);
+    ? allTemplates 
+    : allTemplates.filter(t => t.category === selectedCategory);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
