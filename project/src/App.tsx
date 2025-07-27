@@ -189,7 +189,14 @@ function App() {
       saveCustomTemplates(updated);
       return updated;
     });
-  };``
+  };
+
+  const handleDeleteTemplate = (id: string) => {
+    const updated = templates.filter(t => t.id !== id);
+    setTemplates(updated);
+    localStorage.setItem('habit-heat-custom-templates', JSON.stringify(updated));
+  };
+
 
   const handleArchiveHabit = (habitId?: string) => {
     const targetHabitId = habitId || selectedHabit?.id;
@@ -314,6 +321,7 @@ function App() {
           onBack={handleBackToDashboard}
           onUseTemplate={handleUseTemplate}
           customTemplates={templates}
+          onDeleteTemplate={handleDeleteTemplate}
         />
       )}
 

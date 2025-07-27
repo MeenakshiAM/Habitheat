@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Clock, Target, Lightbulb, Plus } from 'lucide-react';
+import { ArrowLeft, Clock, Target, Lightbulb, Plus, Trash2, Share2 } from 'lucide-react';
 import { HabitTemplate } from '../types';
 import { HABIT_TEMPLATES, getTemplatesByCategory } from '../utils/habitTemplates';
 
@@ -7,11 +7,13 @@ interface HabitTemplatesViewProps {
   onBack: () => void;
   onUseTemplate: (template: HabitTemplate) => void;
   customTemplates: HabitTemplate[];
+  onDeleteTemplate: (id: string) => void;
 }
 
-export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, onUseTemplate, customTemplates = [] }) => {
+export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, onUseTemplate, onDeleteTemplate, customTemplates = [] }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTemplate, setSelectedTemplate] = useState<HabitTemplate | null>(null);
+  const [userTemplates, setUserTemplates] = useState<HabitTemplate[]>(customTemplates);
 
   const allTemplates = [...HABIT_TEMPLATES, ...customTemplates];
   const categories = ['all', ...Array.from(new Set(allTemplates.map(t => t.category)))];
@@ -33,7 +35,29 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
     document.title='Habit Heat-Templates'
   },[])
 
-  
+  const handleShareTemplate = (template: HabitTemplate) => {
+    const subject = encodeURIComponent(`Check out this Habit Heat Template: ${template.name}`);
+
+    const body = encodeURIComponent(
+      `Hey, \n\n I found this great habit template from Habit Heat and thought you might like it: \n` + 
+      `Name: ${template.name} \n Category: ${template.category} \n Difficulty: ${template.difficulty}\n` +
+      `Estimated Time: ${template.estimatedTime} minutes \n Frequency: ${template.daysPerWeek} days/week \n\n` +
+      `Description: \n ${template.description} \n\n` + 
+      `Tips: \n ${template.tips?.join('\n') || 'Stay Determined!'} \n\n` +
+      `Motivational Quote : ${template.motivationalQuote || ''} \n\n` +
+      `Cheers!`
+    );
+
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`, '_blank');
+  }
+
+  const handleDeleteTemplate = (id: string) => {
+    if(window.confirm("Are you sure you want to delete the selected template?")) {
+      onDeleteTemplate(id);
+      alert("Template deleted successfully!");
+    }
+    
+  }
 
   if (selectedTemplate) {
 
@@ -171,45 +195,67 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
 
       {/* Templates Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTemplates.map((template) => (
-          <div
-            key={template.id}
-            onClick={() => setSelectedTemplate(template)}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">{template.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-                  {template.name}
-                </h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
-                    {template.category}
-                  </span>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${getDifficultyColor(template.difficulty)}`}>
-                    {template.difficulty}
-                  </span>
+        {filteredTemplates.map((template) => {
+          const isCustom = userTemplates.some(t => t.id === template.id);
+          return (
+            <div
+              key={template.id}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all relative"
+            >
+              {/* Top-right action icons */}
+              <div className="absolute top-3 right-3 flex gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleShareTemplate(template); }}
+                  className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                >
+                  <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                </button>
+                {isCustom && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDeleteTemplate(template.id); }}
+                    className="p-2 rounded-full bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-600 dark:text-red-300" />
+                  </button>
+                )}
+              </div>
+
+              <div onClick={() => setSelectedTemplate(template)}>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-3xl">{template.emoji}</span>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                      {template.name}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
+                        {template.category}
+                      </span>
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${getDifficultyColor(template.difficulty)}`}>
+                        {template.difficulty}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                  {template.description}
+                </p>
+
+                <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    <span>{template.estimatedTime}m</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Target className="w-4 h-4" />
+                    <span>{template.daysPerWeek}/week</span>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-              {template.description}
-            </p>
-
-            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                <span>{template.estimatedTime}m</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Target className="w-4 h-4" />
-                <span>{template.daysPerWeek}/week</span>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
