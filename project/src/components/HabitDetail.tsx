@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Trash2, StickyNote, Archive, ArchiveRestore } from 'lucide-react';
+import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Trash2, StickyNote, Archive, ArchiveRestore, Save } from 'lucide-react';
 import { Habit } from '../types';
 import { Heatmap } from './Heatmap';
 import { HabitStats } from './HabitStats';
@@ -57,6 +57,10 @@ export const HabitDetail: React.FC<HabitDetailProps> = ({
     }
   };
 
+  const handleSaveTemplate = () => {
+    window.alert("Save this template by going back to dashboard..")
+  }
+
   const handleArchive = () => {
     if (window.confirm(`Are you sure you want to ${habit.isArchived ? 'unarchive' : 'archive'} this habit?`)) {
       onArchive();
@@ -99,6 +103,13 @@ export const HabitDetail: React.FC<HabitDetailProps> = ({
         
         <div className="flex items-center gap-2">
           <button
+            onClick={handleSaveTemplate}
+            className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            title="Save as template"
+          >
+            <Save className="w-4 h-4" />
+          </button>
+          <button
             onClick={handleArchive}
             className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             title="Archive habit"
@@ -125,9 +136,24 @@ export const HabitDetail: React.FC<HabitDetailProps> = ({
           <div className="flex items-center gap-4">
             <span className="text-4xl">{habit.emoji}</span>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {habit.name}
-              </h1>
+              <div className="flex items-center gap-3">
+                <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                  {habit.name}
+                </div>
+                <div
+                  className={`text-s ml-4 font-mono uppercase relative ${
+                    habit.priority === "high"
+                      ? "text-red-500"
+                      : habit.priority === "medium"
+                      ? "text-yellow-500"
+                      : "text-green-500"
+                  }`}
+                >
+                  <span className="relative">{`PRIORITY: ${habit.priority?.toUpperCase()}`}</span>
+                  <span className="absolute inset-0 blur-md opacity-50">{`PRIORITY: ${habit.priority?.toUpperCase()}`}</span>
+                </div>
+              </div>
+
               <div className="flex items-center gap-4 mt-1">
                 <p className="text-gray-500 dark:text-gray-400">
                   Created {new Date(habit.createdAt).toLocaleDateString()}

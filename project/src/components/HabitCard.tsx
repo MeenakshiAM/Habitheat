@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Target, Zap, Archive, ArchiveRestore } from 'lucide-react';
+import { Calendar, Target, Zap, Archive, ArchiveRestore, Save, Copy, Layers, FilePlus } from 'lucide-react';
 import { Habit } from '../types';
 import { MiniHeatmap } from './MiniHeatmap';
 import { calculateHabitStats } from '../utils/habitStats';
@@ -10,6 +10,7 @@ interface HabitCardProps {
   onClick: () => void;
   onMarkToday: (e: React.MouseEvent) => void;
   onArchive?: (e: React.MouseEvent) => void;
+  onSaveTemplate: () => void;
   showArchiveButton?: boolean;
 }
 
@@ -18,6 +19,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({
   onClick, 
   onMarkToday, 
   onArchive,
+  onSaveTemplate
 }) => {
   const stats = calculateHabitStats(habit);
   const today = formatDate(new Date());
@@ -26,6 +28,11 @@ export const HabitCard: React.FC<HabitCardProps> = ({
   const handleMarkToday = (e: React.MouseEvent) => {
     e.stopPropagation();
     onMarkToday(e);
+  };
+
+  const handleSaveTemplate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSaveTemplate();
   };
 
   const handleArchive = (e: React.MouseEvent) => {
@@ -73,6 +80,10 @@ export const HabitCard: React.FC<HabitCardProps> = ({
         </div>
         
         <div className="flex items-center gap-2">
+          <button onClick={handleSaveTemplate} className='p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors'
+          title="Save as template">
+            <Save className="w-4 h-4" />
+          </button>
           { onArchive && (
             <button
               onClick={handleArchive}
@@ -106,12 +117,24 @@ export const HabitCard: React.FC<HabitCardProps> = ({
           <Calendar className="w-4 h-4 text-gray-400" />
           <span className="text-sm text-gray-500 dark:text-gray-400">Last 30 days</span>
           {habit.category && (
-            <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full ml-auto">
+              <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full ml-auto -mt-8">
               {habit.category}
-            </span>
+              </span>
           )}
         </div>
-        <MiniHeatmap habit={habit} />
+        <div className="flex items-center justify-between">
+          <MiniHeatmap habit={habit} />
+          <div className={`text-xs font-mono uppercase ${
+            habit.priority === "high"
+            ? "text-red-500"
+            : habit.priority === "medium"
+            ? "text-yellow-500"
+            : "text-green-500"
+          }`}>
+            <span className="relative">{`PRIORITY: ${habit.priority?.toUpperCase()}`}</span>
+            <span className="absolute inset-0 blur-md opacity-50">{`PRIORITY: ${habit.priority?.toUpperCase()}`}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

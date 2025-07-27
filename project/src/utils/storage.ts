@@ -1,9 +1,10 @@
-import { Habit, Achievement } from '../types';
+import { Habit, Achievement, HabitTemplate } from '../types';
 
 const STORAGE_KEY = 'habit-heat-data';
 const THEME_KEY = 'habit-heat-theme';
 const ACHIEVEMENTS_KEY = 'habit-heat-achievements';
 const SETTINGS_KEY = 'habit-heat-settings';
+const CUSTOM_TEMPLATES_KEY = 'habit-heat-custom-templates';
 
 export const saveHabits = (habits: Habit[]): void => {
   try {
@@ -72,5 +73,23 @@ export const loadSettings = (): any => {
       weekStartsOn: 0,
       showWeekends: true
     };
+  }
+};
+
+export const saveCustomTemplates = (templates: HabitTemplate[]) : void => {
+  try{
+    localStorage.setItem(CUSTOM_TEMPLATES_KEY, JSON.stringify(templates));
+  } catch (error) {
+    console.error('Failed to save custom templates', error);
+  }
+};
+
+export const loadCustomTemplates = (): HabitTemplate[] => {
+  try {
+    const data = localStorage.getItem(CUSTOM_TEMPLATES_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch(error) {
+    console.error('Failed to load custom templates', error);
+    return [];
   }
 };

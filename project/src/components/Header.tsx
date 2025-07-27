@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Moon, Sun, Flame, BarChart3, Trophy, Settings, Target, Smile, BookOpen, Menu, X, ArrowLeft } from 'lucide-react';
+import { Moon, Sun, Flame, BarChart3, Trophy, Target, Smile, BookOpen, Menu, X, User, LogOut } from 'lucide-react';
 
 // Types
 type Theme = 'light' | 'dark';
-type View = 'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates';
+type View = 'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates' | 'profile';
 
 interface HeaderProps {
   theme: Theme;
   currentView: View;
   onThemeToggle: () => void;
   onViewChange: (view: View) => void;
+  onLogout?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggle, onViewChange }) => {
+export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggle, onViewChange, onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
@@ -24,7 +24,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
     { view: 'achievements' as View, icon: Trophy, label: 'Achievements' },
     { view: 'challenges' as View, icon: Target, label: 'Challenges' },
     { view: 'mood' as View, icon: Smile, label: 'Mood' },
-    { view: 'templates' as View, icon: BookOpen, label: 'Templates' }
+    { view: 'templates' as View, icon: BookOpen, label: 'Templates' },
+    { view: 'profile' as View, icon: User, label: 'Profile'},
   ];
 
   // Handle outside click to close mobile menu
@@ -64,19 +65,28 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
     setIsMobileMenuOpen(false);
   };
 
-  //back button
-  const navigate = useNavigate();
-
   return (
     <>
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {currentView != 'dashboard' && (
-              <button onClick={() => navigate(-1)} className="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" aria-label="Back">
-              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300"  />
-            </button>
-            )}
+            {/* <AnimatePresence>
+              {currentView !== 'dashboard' && (
+                <motion.button
+                  key="back-button"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.25 }}
+                  onClick={() => navigate(-1)}
+                  className="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  aria-label="Back"
+                >
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
+                </motion.button>
+              )}
+            </AnimatePresence> */}
+
             {/* Logo - Clickable and Responsive */}
             <button 
               onClick={handleLogoClick}
@@ -104,18 +114,19 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
-              {navItems.map(({ view, icon: Icon, label }) => (
+              {navItems.map(({ view, icon: Icon, label  }) => (
                 <button
                   key={view}
+
                   onClick={() => onViewChange(view)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 min-h-[44px] ${
+                  className={`flex flex-col items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 min-h-[44px] ${
                     currentView === view
-                      ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 shadow-sm'
+                      ? 'bg-orange-200 dark:bg-blue-900/50 text-orange-700 dark:text-blue-300 shadow-sm'
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden xl:inline whitespace-nowrap">{label}</span>
+                  <Icon className={` w-4 h-4 flex-shrink-0 `} />
+                  <span className="hidden md:inline whitespace-nowrap">{label}</span>
                 </button>
               ))}
             </nav>
@@ -134,6 +145,18 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
                   <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
                 )}
               </button>
+
+              {/* Logout Button */}
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="hidden lg:flex p-2 sm:p-3 rounded-full bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors min-h-[44px] min-w-[44px] items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  aria-label="Logout"
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400" />
+                </button>
+              )}
 
               {/* Mobile Hamburger Menu */}
               <button
@@ -196,7 +219,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
                       onClick={() => handleViewChange(view)}
                       className={`w-full flex items-center gap-4 px-4 py-4 rounded-xl text-left font-medium transition-all duration-200 min-h-[56px] ${
                         currentView === view
-                          ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 shadow-sm'
+                          ? 'bg-orange-200 dark:bg-blue-900/50 text-orange-700 dark:text-blue-300 shadow-sm'
                           : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                       }`}
                     >
@@ -209,6 +232,18 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
 
               {/* Footer */}
               <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                {onLogout && (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onLogout();
+                    }}
+                    className="w-full flex items-center gap-4 px-4 py-3 mb-4 rounded-xl text-left font-medium transition-all duration-200 min-h-[48px] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  >
+                    <LogOut className="w-5 h-5 flex-shrink-0" />
+                    <span className="text-base">Logout</span>
+                  </button>
+                )}
                 <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
                   Habit Heat - Track your daily habits
                 </p>
