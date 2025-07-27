@@ -170,6 +170,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup, onLoginSuccess }) => {
         className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8" 
         style={{
           background: 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 25%, #ff6b35 50%, #d63031 75%, #74b9ff 100%)'
+          //background: 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 25%, #ff6b35 50%, #d63031 75%, #74b9ff 100%)'
         }}
       >
         <div className="w-full max-w-md">
