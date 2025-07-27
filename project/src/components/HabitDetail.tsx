@@ -105,7 +105,7 @@ export const HabitDetail: React.FC<HabitDetailProps> = ({
           <button
             onClick={handleSaveTemplate}
             className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-            title="Archive habit"
+            title="Save as template"
           >
             <Save className="w-4 h-4" />
           </button>
