@@ -128,6 +128,7 @@ export type View =
   | "mood"
   | "social"
   | "templates"
+  | "profile"
   | "not-found";
 export type SortOption =
   | "name"

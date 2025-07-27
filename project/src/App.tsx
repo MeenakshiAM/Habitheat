@@ -11,14 +11,14 @@ import { MoodTracker } from './pages/MoodTracker';
 import { HabitTemplatesView } from './pages/HabitTemplatesView';
 import { AchievementNotification } from './components/AchievementNotification';
 import NotFound from './pages/NotFound';
+import Login from './components/Login';
+import Signup from './components/Signup';
 import { useHabits } from './hooks/useHabits';
 import { useTheme } from './hooks/useTheme';
 import { Habit, View, HabitTemplate } from './types';
 import ProfilePage from './pages/ProfilePage';
 import { Footer } from './components/Footer';
 import { loadCustomTemplates, saveCustomTemplates } from './utils/storage';
-
-
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -47,9 +47,42 @@ function App() {
   const [isSaveTemplateOpen, setIsSaveTemplateOpen] = useState(false);
   const [habitToSave, setHabitToSave] = useState<Habit | null>(null);
   const [templates, setTemplates] = useState<HabitTemplate[]>([]);
+  
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [authView, setAuthView] = useState<'login' | 'signup'>('login');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Check authentication status on app load
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem('authToken');
+      const user = localStorage.getItem('user');
+      
+      if (token && user) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+      setIsLoading(false);
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setCurrentView('dashboard');
+    setSelectedHabit(null);
+  };
 
   // URL-based routing for production/vercel
   useEffect(() => {
+    if (!isAuthenticated) return; // Don't handle routing if not authenticated
+
     const handleRouting = () => {
       const path = window.location.pathname;
       const validRoutes = [
@@ -90,7 +123,7 @@ function App() {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [isAuthenticated]);
 
   const navigateToView = (view: Exclude<View, 'not-found' | 'habit-detail' | 'add-habit' | 'social'>) => {
     const routes: Record<string, string> = {
@@ -248,6 +281,12 @@ function App() {
     }
   };
 
+  // Handle successful login
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+    setCurrentView('dashboard');
+  };
+
   // Update selected habit when habits change
   React.useEffect(() => {
     if (selectedHabit) {
@@ -258,6 +297,36 @@ function App() {
     }
   }, [habits, selectedHabit]);
 
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show authentication screens if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <>
+        {authView === 'login' ? (
+          <Login 
+            onSwitchToSignup={() => setAuthView('signup')}
+            onLoginSuccess={handleLoginSuccess}
+          />
+        ) : (
+          <Signup 
+            onSwitchToLogin={() => setAuthView('login')}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <Header 
@@ -265,6 +334,7 @@ function App() {
         currentView={getHeaderView(currentView)}
         onThemeToggle={toggleTheme}
         onViewChange={(view) => navigateToView(view)}
+        onLogout={handleLogout}
       />
       
       {currentView === 'not-found' && (
@@ -339,7 +409,7 @@ function App() {
       )}
 
       {currentView === 'profile' && (
-        <ProfilePage />
+        <ProfilePage theme={theme} />
       )}
 
       <AddHabitModal
@@ -348,10 +418,6 @@ function App() {
         onAdd={handleHabitAdded}
       />
 
-      <AchievementNotification
-        achievements={newAchievements}
-        onDismiss={dismissAchievement}
-      />
       <AchievementNotification
         achievements={newAchievements}
         onDismiss={dismissAchievement}
