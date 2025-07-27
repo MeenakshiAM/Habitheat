@@ -7,6 +7,7 @@ interface SaveAsTemplateProps {
   isOpen: boolean,
   onClose: () => void;
   onSave: (template: Omit<HabitTemplate, 'id'>) => void;
+  existingTemplates: HabitTemplate[];
 }
 
 const EMOJI_OPTIONS = [
@@ -20,7 +21,7 @@ const CATEGORIES = [
   'Social', 'Creative', 'Finance', 'Personal Care', 'Digital Wellness', 'Other'
 ];
 
-export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpen, onClose, onSave}) => {
+export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpen, onClose, onSave, existingTemplates}) => {
   //fields to prefill
   const [name, setName] = useState('');
   const [selectedEmoji, setSelectedEmoji] = useState('');
@@ -63,7 +64,16 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    const exists = existingTemplates.some(
+      t => t.name.trim().toLowerCase() === name.trim().toLowerCase() && t.category === category
+    );
+
+    if (exists) {
+      alert('A template with this name and category already exists!');
+      return;
+    }
+
     if(description.trim()) {
       onSave({
         name: name.trim(),

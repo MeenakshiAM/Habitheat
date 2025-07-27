@@ -288,6 +288,7 @@ function App() {
           isOpen={isSaveTemplateOpen}
           onClose={() => setIsSaveTemplateOpen(false)}
           onSave={handleSaveTemplate}
+          existingTemplates={templates}
         />
       )}
 

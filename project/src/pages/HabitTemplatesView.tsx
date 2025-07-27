@@ -66,13 +66,22 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
       : ["Stay determined!"]);
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <button
-          onClick={() => setSelectedTemplate(null)}
-          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-6"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back to Templates</span>
-        </button>
+        <div className="flex justify-between py-2 items-center">
+          <button
+            onClick={() => setSelectedTemplate(null)}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-6"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back to Templates</span>
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); handleShareTemplate(selectedTemplate); }}
+            className="p-4 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+          >
+            <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+          </button>
+        </div>
+        
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-4 mb-6">
