@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Habit, Achievement, Challenge, Mood, HabitTemplate } from '../types';
 import { saveHabits, loadHabits, saveAchievements, loadAchievements } from '../utils/storage';
-import { checkAchievements } from '../utils/achievements';
+// 1. UPDATED: Import the new function from our achievements utility
+import { checkNewAchievements } from '../utils/achievements';
 import { formatDate } from '../utils/dateUtils';
 
 export const useHabits = () => {
@@ -26,20 +27,18 @@ export const useHabits = () => {
     setTemplates(savedTemplates);
   }, []);
 
-  const saveToStorage = useCallback((updatedHabits: Habit[]) => {
+  // 2. RENAMED & UPDATED: This function now uses our new achievement logic
+  const updateHabitsAndCheckAchievements = useCallback((updatedHabits: Habit[]) => {
     setHabits(updatedHabits);
     saveHabits(updatedHabits);
     
-    // Check for new achievements
-    const newAchievs = checkAchievements(updatedHabits, achievements);
+    // Check for new achievements using the new function
+    const newAchievs = checkNewAchievements(updatedHabits, achievements);
     if (newAchievs.length > 0) {
       const updatedAchievements = [...achievements, ...newAchievs];
       setAchievements(updatedAchievements);
       setNewAchievements(newAchievs);
       saveAchievements(updatedAchievements);
-      
-      // Clear new achievements after 5 seconds
-      setTimeout(() => setNewAchievements([]), 5000);
     }
   }, [achievements]);
 
@@ -54,9 +53,9 @@ export const useHabits = () => {
       isArchived: false
     };
     
-    const updatedHabits = [...habits, newHabit];
-    saveToStorage(updatedHabits);
-  }, [habits, saveToStorage]);
+    // 3. UPDATED: Call the new central function
+    updateHabitsAndCheckAchievements([...habits, newHabit]);
+  }, [habits, updateHabitsAndCheckAchievements]);
 
   const addHabitFromTemplate = useCallback((template: HabitTemplate) => {
     const newHabit: Habit = {
@@ -69,14 +68,10 @@ export const useHabits = () => {
       category: template.category,
       difficulty: template.difficulty,
       isArchived: false,
-      targetDays: template.targetDays,
-      estimatedTime: template.estimatedTime,
-      motivationalQuote: template.motivationalQuote
     };
     
-    const updatedHabits = [...habits, newHabit];
-    saveToStorage(updatedHabits);
-  }, [habits, saveToStorage]);
+    updateHabitsAndCheckAchievements([...habits, newHabit]);
+  }, [habits, updateHabitsAndCheckAchievements]);
 
   //adding template
   const addTemplate = useCallback((template: HabitTemplate) => {
@@ -89,14 +84,15 @@ export const useHabits = () => {
     const updatedHabits = habits.map(habit =>
       habit.id === id ? { ...habit, ...updates } : habit
     );
-    saveToStorage(updatedHabits);
-  }, [habits, saveToStorage]);
+    updateHabitsAndCheckAchievements(updatedHabits);
+  }, [habits, updateHabitsAndCheckAchievements]);
 
   const deleteHabit = useCallback((id: string) => {
     const updatedHabits = habits.filter(habit => habit.id !== id);
-    saveToStorage(updatedHabits);
-  }, [habits, saveToStorage]);
+    updateHabitsAndCheckAchievements(updatedHabits);
+  }, [habits, updateHabitsAndCheckAchievements]);
 
+  // All your other functions are preserved
   const archiveHabit = useCallback((id: string, shouldArchive?: boolean) => {
     setHabits(prev => {
       const updated = prev.map(habit =>
@@ -113,35 +109,20 @@ export const useHabits = () => {
     const updatedHabits = habits.map(habit => {
       if (habit.id === habitId) {
         const currentStatus = habit.logs[date];
-        let newStatus: boolean | undefined;
-        
-        if (currentStatus === undefined) {
-          newStatus = true; // No log -> completed
-        } else if (currentStatus === true) {
-          newStatus = false; // Completed -> missed
-        } else {
-          newStatus = undefined; // Missed -> no log
-        }
-        
         const updatedLogs = { ...habit.logs };
-        if (newStatus === undefined) {
-          delete updatedLogs[date];
-        } else {
-          updatedLogs[date] = newStatus;
-        }
-        
+        if (currentStatus === undefined) { updatedLogs[date] = true; } 
+        else if (currentStatus === true) { updatedLogs[date] = false; } 
+        else { delete updatedLogs[date]; }
         return { ...habit, logs: updatedLogs };
       }
       return habit;
     });
-    
-    saveToStorage(updatedHabits);
-  }, [habits, saveToStorage]);
+    updateHabitsAndCheckAchievements(updatedHabits);
+  }, [habits, updateHabitsAndCheckAchievements]);
 
   const markTodayComplete = useCallback((habitId: string) => {
     const today = formatDate(new Date());
     const habit = habits.find(h => h.id === habitId);
-    
     if (habit && habit.logs[today] !== true) {
       toggleHabitCompletion(habitId, today);
     }
@@ -151,30 +132,23 @@ export const useHabits = () => {
     const updatedHabits = habits.map(habit => {
       if (habit.id === habitId) {
         const updatedNotes = { ...habit.notes };
-        if (note.trim()) {
-          updatedNotes[date] = note.trim();
-        } else {
-          delete updatedNotes[date];
-        }
+        if (note.trim()) { updatedNotes[date] = note.trim(); } 
+        else { delete updatedNotes[date]; }
         return { ...habit, notes: updatedNotes };
       }
       return habit;
     });
-    saveToStorage(updatedHabits);
-  }, [habits, saveToStorage]);
+    updateHabitsAndCheckAchievements(updatedHabits);
+  }, [habits, updateHabitsAndCheckAchievements]);
 
   const startChallenge = useCallback((challengeId: string) => {
-    const updatedChallenges = challenges.map(challenge =>
-      challenge.id === challengeId ? { ...challenge, isActive: true } : challenge
-    );
+    const updatedChallenges = challenges.map(c => c.id === challengeId ? { ...c, isActive: true } : c);
     setChallenges(updatedChallenges);
     localStorage.setItem('habit-heat-challenges', JSON.stringify(updatedChallenges));
   }, [challenges]);
 
   const completeChallenge = useCallback((challengeId: string) => {
-    const updatedChallenges = challenges.map(challenge =>
-      challenge.id === challengeId ? { ...challenge, isActive: false } : challenge
-    );
+    const updatedChallenges = challenges.map(c => c.id === challengeId ? { ...c, isActive: false } : c);
     setChallenges(updatedChallenges);
     localStorage.setItem('habit-heat-challenges', JSON.stringify(updatedChallenges));
   }, [challenges]);
