@@ -29,13 +29,17 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
   };
 
   // tabtitle
-        useEffect(()=>{
-          document.title='Habit Heat-Templates'
-        },[])
+  useEffect(()=>{
+    document.title='Habit Heat-Templates'
+  },[])
 
   
 
   if (selectedTemplate) {
+
+    const tipsToShow = (selectedTemplate.tips?.filter(tip => tip.trim())?.length 
+      ? selectedTemplate.tips.filter(tip => tip.trim()) 
+      : ["Stay determined!"]);
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
         <button
@@ -85,7 +89,7 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
                 <Target className="w-5 h-5 text-green-500" />
                 <div>
                   <div className="font-medium text-gray-900 dark:text-white">
-                    {selectedTemplate.targetDays.length} days/week
+                    {selectedTemplate.daysPerWeek} days/week
                   </div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">Recommended frequency</div>
                 </div>
@@ -98,7 +102,7 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
                 Tips for Success
               </h3>
               <ul className="space-y-2">
-                {selectedTemplate.tips.map((tip, index) => (
+                {tipsToShow.map((tip, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
                     <span className="text-gray-600 dark:text-gray-400">{tip}</span>
@@ -107,11 +111,14 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
               </ul>
             </div>
 
-            <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
-              <p className="text-blue-800 dark:text-blue-200 font-medium italic">
-                "{selectedTemplate.motivationalQuote}"
-              </p>
-            </div>
+            {selectedTemplate.motivationalQuote?.trim() && (
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+                <p className="text-blue-800 dark:text-blue-200 font-medium italic">
+                  "{selectedTemplate.motivationalQuote}"
+                </p>
+              </div>
+            )}
+
 
             <button
               onClick={() => onUseTemplate(selectedTemplate)}
@@ -198,7 +205,7 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
               </div>
               <div className="flex items-center gap-1">
                 <Target className="w-4 h-4" />
-                <span>{template.targetDays.length}/week</span>
+                <span>{template.daysPerWeek}/week</span>
               </div>
             </div>
           </div>

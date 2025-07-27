@@ -73,13 +73,13 @@ export interface HabitTemplate {
   id: string;
   name: string;
   emoji: string;
-  color: string;
+  color?: string;
   category: string;
   difficulty: 'easy' | 'medium' | 'hard';
   description: string;
   tips: string[];
   estimatedTime: number;
-  targetDays: number[];
+  daysPerWeek: number;
   motivationalQuote: string;
 }
 
