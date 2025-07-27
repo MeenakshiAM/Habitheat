@@ -16,7 +16,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
       'Track with an app or marks on your bottle'
     ],
     estimatedTime: 5,
-    targetDays: [1, 2, 3, 4, 5, 6, 0],
+    daysPerWeek: 7,
     motivationalQuote: 'Water is life. Stay hydrated, stay healthy!'
   },
   {
@@ -34,7 +34,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
       'Mix cardio and strength training'
     ],
     estimatedTime: 30,
-    targetDays: [1, 2, 3, 4, 5],
+    daysPerWeek: 5,
     motivationalQuote: 'Your body can do it. It\'s your mind you need to convince.'
   },
   {
@@ -52,7 +52,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
       'Set a yearly reading goal'
     ],
     estimatedTime: 20,
-    targetDays: [1, 2, 3, 4, 5, 6, 0],
+    daysPerWeek: 7,
     motivationalQuote: 'Reading is to the mind what exercise is to the body.'
   },
   {
@@ -70,7 +70,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
       'Focus on your breath'
     ],
     estimatedTime: 10,
-    targetDays: [1, 2, 3, 4, 5, 6, 0],
+    daysPerWeek: 7,
     motivationalQuote: 'Peace comes from within. Do not seek it without.'
   },
   {
@@ -88,7 +88,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
       'Read past entries when feeling down'
     ],
     estimatedTime: 5,
-    targetDays: [1, 2, 3, 4, 5, 6, 0],
+    daysPerWeek: 7,
     motivationalQuote: 'Gratitude turns what we have into enough.'
   },
   {
@@ -106,7 +106,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
       'Set small daily goals'
     ],
     estimatedTime: 15,
-    targetDays: [1, 2, 3, 4, 5],
+    daysPerWeek: 5,
     motivationalQuote: 'A different language is a different vision of life.'
   },
   {
@@ -124,7 +124,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
       'Replace phone time with reading or exercise'
     ],
     estimatedTime: 60,
-    targetDays: [1, 2, 3, 4, 5, 6, 0],
+    daysPerWeek: 7,
     motivationalQuote: 'The first hour of the morning is the rudder of the day.'
   },
   {
@@ -142,7 +142,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
       'Stay hydrated while eating'
     ],
     estimatedTime: 30,
-    targetDays: [1, 2, 3, 4, 5, 6, 0],
+    daysPerWeek: 7,
     motivationalQuote: 'Let food be thy medicine and medicine be thy food.'
   }
 ];

@@ -11,17 +11,20 @@ export const useHabits = () => {
   const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [moods, setMoods] = useState<Record<string, Mood>>({});
+  const [templates, setTemplates] = useState<HabitTemplate[]>([]);
 
   useEffect(() => {
     const savedHabits = loadHabits();
     const savedAchievements = loadAchievements();
     const savedChallenges = JSON.parse(localStorage.getItem('habit-heat-challenges') || '[]');
     const savedMoods = JSON.parse(localStorage.getItem('habit-heat-moods') || '{}');
+    const savedTemplates = JSON.parse(localStorage.getItem('habit-heat-templates') || '[]');
     
     setHabits(savedHabits);
     setAchievements(savedAchievements);
     setChallenges(savedChallenges);
     setMoods(savedMoods);
+    setTemplates(savedTemplates);
   }, []);
 
   // 2. RENAMED & UPDATED: This function now uses our new achievement logic
@@ -69,6 +72,13 @@ export const useHabits = () => {
     
     updateHabitsAndCheckAchievements([...habits, newHabit]);
   }, [habits, updateHabitsAndCheckAchievements]);
+
+  //adding template
+  const addTemplate = useCallback((template: HabitTemplate) => {
+     const updatedTemplates = [...templates, template];
+    setTemplates(updatedTemplates);
+    localStorage.setItem('habit-heat-templates', JSON.stringify(updatedTemplates));
+  }, [templates]);
 
   const updateHabit = useCallback((id: string, updates: Partial<Habit>) => {
     const updatedHabits = habits.map(habit =>
@@ -159,8 +169,10 @@ export const useHabits = () => {
     newAchievements,
     challenges,
     moods,
+    templates,
     addHabit,
     addHabitFromTemplate,
+    addTemplate,
     updateHabit,
     deleteHabit,
     archiveHabit,

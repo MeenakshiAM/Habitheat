@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Dashboard } from './pages/Dashboard';
 import { HabitDetail } from './components/HabitDetail';
 import { AddHabitModal } from './components/AddHabitModal';
+import { SaveAsTemplateModal } from './components/SaveAsTemplateModal';
 import { InsightsView } from './pages/InsightsView';
 import { AchievementsView } from './pages/AchievementsView';
 import { ChallengesView } from './pages/ChallengesView';
@@ -17,6 +18,7 @@ import { useTheme } from './hooks/useTheme';
 import { Habit, View, HabitTemplate } from './types';
 import ProfilePage from './pages/ProfilePage';
 import { Footer } from './components/Footer';
+import { loadCustomTemplates, saveCustomTemplates } from './utils/storage';
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -42,6 +44,9 @@ function App() {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSaveTemplateOpen, setIsSaveTemplateOpen] = useState(false);
+  const [habitToSave, setHabitToSave] = useState<Habit | null>(null);
+  const [templates, setTemplates] = useState<HabitTemplate[]>([]);
   
   // Authentication state
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -193,6 +198,39 @@ function App() {
     }
   };
 
+  const handleSaveTemplate = (templateData: Omit<HabitTemplate, 'id'>) => {
+    const newTemplate: HabitTemplate = {
+      ...templateData,
+      id: crypto.randomUUID(),
+    };
+    addTemplate(newTemplate);
+    setIsSaveTemplateOpen(false);
+  };
+
+  const handleSaveTemplateClick = (habit: Habit) => {
+    setHabitToSave(habit);
+    setIsSaveTemplateOpen(true);
+  };
+
+  useEffect(() => {
+    setTemplates(loadCustomTemplates());
+  }, []);
+
+  const addTemplate = (template: HabitTemplate) => {
+    setTemplates(prev => {
+      const updated = [...prev, template];
+      saveCustomTemplates(updated);
+      return updated;
+    });
+  };
+
+  const handleDeleteTemplate = (id: string) => {
+    const updated = templates.filter(t => t.id !== id);
+    setTemplates(updated);
+    localStorage.setItem('habit-heat-custom-templates', JSON.stringify(updated));
+  };
+
+
   const handleArchiveHabit = (habitId?: string) => {
     const targetHabitId = habitId || selectedHabit?.id;
     if (targetHabitId) {
@@ -309,9 +347,21 @@ function App() {
           onAddHabit={handleAddHabit}
           onHabitClick={handleHabitClick}
           onMarkToday={handleMarkToday}
+          onSaveTemplate={handleSaveTemplateClick}
           onArchiveHabit={handleArchiveHabit}
         />
       )}
+
+      {habitToSave && (
+        <SaveAsTemplateModal
+          habit={habitToSave}
+          isOpen={isSaveTemplateOpen}
+          onClose={() => setIsSaveTemplateOpen(false)}
+          onSave={handleSaveTemplate}
+          existingTemplates={templates}
+        />
+      )}
+
 
       {currentView === 'insights' && (
         <InsightsView habits={habits} />
@@ -341,6 +391,8 @@ function App() {
         <HabitTemplatesView
           onBack={handleBackToDashboard}
           onUseTemplate={handleUseTemplate}
+          customTemplates={templates}
+          onDeleteTemplate={handleDeleteTemplate}
         />
       )}
 
@@ -373,6 +425,7 @@ function App() {
 
       <Footer /> 
     </div>
+
   );
 }
 

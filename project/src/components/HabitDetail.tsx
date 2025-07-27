@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Trash2, StickyNote, Archive, ArchiveRestore } from 'lucide-react';
+import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Trash2, StickyNote, Archive, ArchiveRestore, Save } from 'lucide-react';
 import { Habit } from '../types';
 import { Heatmap } from './Heatmap';
 import { HabitStats } from './HabitStats';
@@ -57,6 +57,10 @@ export const HabitDetail: React.FC<HabitDetailProps> = ({
     }
   };
 
+  const handleSaveTemplate = () => {
+    window.alert("Save this template by going back to dashboard..")
+  }
+
   const handleArchive = () => {
     if (window.confirm(`Are you sure you want to ${habit.isArchived ? 'unarchive' : 'archive'} this habit?`)) {
       onArchive();
@@ -98,6 +102,13 @@ export const HabitDetail: React.FC<HabitDetailProps> = ({
         </button>
         
         <div className="flex items-center gap-2">
+          <button
+            onClick={handleSaveTemplate}
+            className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            title="Save as template"
+          >
+            <Save className="w-4 h-4" />
+          </button>
           <button
             onClick={handleArchive}
             className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
