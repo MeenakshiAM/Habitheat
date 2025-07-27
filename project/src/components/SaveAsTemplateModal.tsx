@@ -128,7 +128,7 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Habit Name
+              Habit Name (Required)
             </label>
             <input
               type="text"
@@ -141,7 +141,7 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Description
+              Description (Required)
             </label>
             <textarea
               value={description}
