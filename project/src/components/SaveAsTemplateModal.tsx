@@ -129,8 +129,6 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
               autoFocus
             />
           </div>
-
-          {/* NEW: Description Textarea */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Description
@@ -142,8 +140,6 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
               className="w-full h-20 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
           </div>
-
-          {/* NEW: Days per week select */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Days per Week
@@ -159,7 +155,6 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
             </select>
           </div>
 
-          {/* Existing emoji grid */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Choose an Emoji
@@ -182,7 +177,6 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
             </div>
           </div>
 
-          {/* Category & Difficulty */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -215,7 +209,6 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
             </div>
           </div>
 
-          {/* Estimated Time */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Estimated Time (minutes)
@@ -234,7 +227,6 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
             </div>
           </div>
 
-          {/* NEW: Tips Section */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Tips
@@ -267,7 +259,6 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
             </ul>
           </div>
 
-          {/* Motivation */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Personal Motivation (optional)
@@ -279,8 +270,6 @@ export const SaveAsTemplateModal: React.FC<SaveAsTemplateProps> = ({habit, isOpe
               className="w-full h-20 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
           </div>
-
-          {/* Buttons */}
           <div className="flex gap-3 pt-4">
             <button
               type="button"

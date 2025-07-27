@@ -16,6 +16,7 @@ import { useTheme } from './hooks/useTheme';
 import { Habit, View, HabitTemplate } from './types';
 import ProfilePage from './pages/ProfilePage';
 import { Footer } from './components/Footer';
+import { loadCustomTemplates, saveCustomTemplates } from './utils/storage';
 
 
 
@@ -164,10 +165,6 @@ function App() {
     }
   };
 
-  const addTemplate = (template: HabitTemplate) => {
-    setTemplates(prev => [...prev, template]);
-  };
-
   const handleSaveTemplate = (templateData: Omit<HabitTemplate, 'id'>) => {
     const newTemplate: HabitTemplate = {
       ...templateData,
@@ -182,6 +179,17 @@ function App() {
     setIsSaveTemplateOpen(true);
   };
 
+  useEffect(() => {
+    setTemplates(loadCustomTemplates());
+  }, []);
+
+  const addTemplate = (template: HabitTemplate) => {
+    setTemplates(prev => {
+      const updated = [...prev, template];
+      saveCustomTemplates(updated);
+      return updated;
+    });
+  };``
 
   const handleArchiveHabit = (habitId?: string) => {
     const targetHabitId = habitId || selectedHabit?.id;
