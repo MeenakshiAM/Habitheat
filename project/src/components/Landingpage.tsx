@@ -13,7 +13,7 @@ import {
 
 import { TypeAnimation } from 'react-type-animation';
 
-export default function HabitHeatLanding() {
+export default function HabitHeatLanding({ handleGetStarted }) {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   const testimonials = [
@@ -143,8 +143,8 @@ export default function HabitHeatLanding() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-            <button onClick={()=>{alert('Route the user to the signup page')}} className="bg-orange-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover: transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-              Start Your Journey Free
+            <button onClick={handleGetStarted} className="bg-orange-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-orange-600 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+               Start Your Journey Free
             </button>
             <button onClick={()=>{ alert('Route the user to the demo video')
             }} className="px-8 py-4 rounded-xl text-lg font-semibold border-2 border-gray-600 text-gray-300 hover:bg-gray-800 transition-all duration-200 transform hover:scale-105">
@@ -291,16 +291,14 @@ export default function HabitHeatLanding() {
           <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
             Join thousands of people who have already started their journey to better habits. Start free today!
           </p>
-          <button onClick={()=>{
-            alert('Route to the signup page')
-          }} className="bg-white text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-            Get Started Now !!
+          <button onClick={handleGetStarted} className="bg-white text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+             Get Started Now !!
           </button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-4 bg-gray-900 border-t border-gray-800">
+      {/* <footer className="py-16 px-4 bg-gray-900 border-t border-gray-800">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             <div className="col-span-1 md:col-span-2">
@@ -331,7 +329,7 @@ export default function HabitHeatLanding() {
             </p>
           </div>
         </div>
-      </footer>
+      </footer> */}
 
       <style jsx>{`
         @keyframes blob {
