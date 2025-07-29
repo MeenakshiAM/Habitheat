@@ -3,15 +3,18 @@ import axios, { AxiosError } from 'axios';
 import { Eye, EyeOff, Flame, Users, Loader2, X, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Type definitions
-interface SignupFormData {
-  username: string;
+interface LoginFormData {
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
-interface SignupResponse {
+interface LoginResponse {
   message: string;
+  token: string;
+  user: {
+    username: string;
+    email: string;
+  };
 }
 
 interface ErrorResponse {
@@ -62,23 +65,25 @@ const Notification: React.FC<NotificationProps> = ({ type, message, onClose }) =
   );
 };
 
-interface SignupProps {
-  onSwitchToLogin: () => void;
+interface LoginProps {
+  onSwitchToSignup: () => void;
+  onLoginSuccess?: () => void;
 }
 
-const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
+const Login: React.FC<LoginProps> = ({ onSwitchToSignup, onLoginSuccess }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const [formData, setFormData] = useState<SignupFormData>({
-    username: '',
+  const [formData, setFormData] = useState<LoginFormData>({
     email: '',
-    password: '',
-    confirmPassword: ''
+    password: ''
   });
 
-  const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/auth';
+  //const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL || '/api/auth';
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
+    ? `${import.meta.env.VITE_API_BASE_URL}/api/auth`
+    : '/api/auth';
+
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -93,29 +98,14 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
   };
 
   const validateForm = (): boolean => {
-    if (!formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.email || !formData.password) {
       setNotification({ type: 'error', message: 'All fields are required' });
-      return false;
-    }
-
-    if (formData.username.length < 3) {
-      setNotification({ type: 'error', message: 'Username must be at least 3 characters long' });
       return false;
     }
 
     const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setNotification({ type: 'error', message: 'Please enter a valid email address' });
-      return false;
-    }
-
-    if (formData.password.length < 6) {
-      setNotification({ type: 'error', message: 'Password must be at least 6 characters long' });
-      return false;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setNotification({ type: 'error', message: 'Passwords do not match' });
       return false;
     }
 
@@ -129,30 +119,30 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
     setNotification(null);
 
     try {
-      const response = await axios.post<SignupResponse>(`${API_BASE_URL}/signup`, {
-        username: formData.username,
+      const response = await axios.post<LoginResponse>(`${API_BASE_URL}/login`, {
         email: formData.email,
         password: formData.password
       });
 
+      // Store token and user data
+      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
       setNotification({ type: 'success', message: response.data.message });
 
       // Reset form
-      setFormData({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-      });
+      setFormData({ email: '', password: '' });
 
-      // Redirect to login after successful signup
+      // Call success callback
       setTimeout(() => {
-        onSwitchToLogin();
-      }, 2000);
+        if (onLoginSuccess) {
+          onLoginSuccess();
+        }
+      }, 1500);
 
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
-      const errorMessage = axiosError.response?.data?.message || 'Signup failed. Please try again.';
+      const errorMessage = axiosError.response?.data?.message || 'Login failed. Please try again.';
       setNotification({ type: 'error', message: errorMessage });
     } finally {
       setIsLoading(false);
@@ -166,7 +156,7 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
   };
 
   const handleSocialLogin = (provider: 'google' | 'facebook'): void => {
-    console.log(`${provider} signup clicked`);
+    console.log(`${provider} login clicked`);
     // OAuth implementation here
   };
 
@@ -184,6 +174,7 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
         className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8" 
         style={{
           background: 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 25%, #ff6b35 50%, #d63031 75%, #74b9ff 100%)'
+          //background: 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 25%, #ff6b35 50%, #d63031 75%, #74b9ff 100%)'
         }}
       >
         <div className="w-full max-w-md">
@@ -219,33 +210,17 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
             </div>
           </div>
 
-          {/* Signup Form */}
+          {/* Login Form */}
           <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8">
             <div className="text-center mb-6 sm:mb-8">
               <div className="flex items-center justify-center mb-3 sm:mb-4">
                 <Flame className="w-6 h-6 sm:w-8 sm:h-8 text-orange-500 mr-2" />
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Join Habit Heat</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Welcome Back</h1>
               </div>
-              <p className="text-sm sm:text-base text-gray-600">Create an account to start tracking your habits</p>
+              <p className="text-sm sm:text-base text-gray-600">Sign in to continue tracking your habits</p>
             </div>
 
             <div className="space-y-4 sm:space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  onKeyPress={handleKeyPress}
-                  className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-sm sm:text-base"
-                  placeholder="Enter your username"
-                  disabled={isLoading}
-                />
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email
@@ -288,30 +263,14 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    onKeyPress={handleKeyPress}
-                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-10 sm:pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-sm sm:text-base"
-                    placeholder="Confirm your password"
-                    disabled={isLoading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 disabled:opacity-50"
-                    disabled={isLoading}
-                  >
-                    {showConfirmPassword ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
-                  </button>
-                </div>
+              <div className="text-right">
+                <button
+                  type="button"
+                  className="text-sm text-orange-600 hover:text-orange-700 font-medium disabled:opacity-50"
+                  disabled={isLoading}
+                >
+                  Forgot Password?
+                </button>
               </div>
 
               <button
@@ -325,20 +284,20 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
               >
                 {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span className="text-sm sm:text-base">
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
+                  {isLoading ? 'Signing In...' : 'Sign In'}
                 </span>
               </button>
             </div>
 
             <div className="mt-6 sm:mt-8 text-center">
               <p className="text-sm sm:text-base text-gray-600">
-                Already have an account?
+                Don't have an account?
                 <button
-                  onClick={onSwitchToLogin}
+                  onClick={onSwitchToSignup}
                   className="ml-2 text-orange-600 hover:text-orange-700 font-semibold disabled:opacity-50"
                   disabled={isLoading}
                 >
-                  Sign In
+                  Sign Up
                 </button>
               </p>
             </div>
@@ -350,7 +309,7 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or sign up with</span>
+                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
                 </div>
               </div>
 
@@ -388,4 +347,4 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
   );
 };
 
-export default Signup;
+export default Login;
