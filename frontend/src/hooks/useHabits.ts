@@ -80,9 +80,9 @@ export const useHabits = () => {
     localStorage.setItem('habit-heat-templates', JSON.stringify(updatedTemplates));
   }, [templates]);
 
-  const updateHabit = useCallback((id: string, updates: Partial<Habit>) => {
+  const updateHabit = useCallback((updatedHabit: Habit) => {
     const updatedHabits = habits.map(habit =>
-      habit.id === id ? { ...habit, ...updates } : habit
+      habit.id === updatedHabit.id ? updatedHabit : habit
     );
     updateHabitsAndCheckAchievements(updatedHabits);
   }, [habits, updateHabitsAndCheckAchievements]);

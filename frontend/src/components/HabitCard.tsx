@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Target, Zap, Archive, ArchiveRestore, Save, Copy, Layers, FilePlus } from 'lucide-react';
+import { Calendar, Target, Zap, Archive, ArchiveRestore, Save, Edit} from 'lucide-react';
 import { Habit } from '../types';
 import { MiniHeatmap } from './MiniHeatmap';
 import { calculateHabitStats } from '../utils/habitStats';
@@ -12,6 +12,7 @@ interface HabitCardProps {
   onArchive?: (e: React.MouseEvent) => void;
   onSaveTemplate: () => void;
   showArchiveButton?: boolean;
+  onEdit: (habit: Habit) => void; 
 }
 
 export const HabitCard: React.FC<HabitCardProps> = ({ 
@@ -19,7 +20,8 @@ export const HabitCard: React.FC<HabitCardProps> = ({
   onClick, 
   onMarkToday, 
   onArchive,
-  onSaveTemplate
+  onSaveTemplate,
+  onEdit
 }) => {
   const stats = calculateHabitStats(habit);
   const today = formatDate(new Date());
@@ -79,7 +81,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="relative -right-7 flex items-center gap-2">
           <button onClick={handleSaveTemplate} className='p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors'
           title="Save as template">
             <Save className="w-4 h-4" />
@@ -110,6 +112,12 @@ export const HabitCard: React.FC<HabitCardProps> = ({
             {todayCompleted ? 'Done!' : 'Mark Today'}
           </button>
         </div>
+        <button onClick={(e) => {
+          e.stopPropagation();
+          onEdit(habit);
+        }} className="p-2 relative -right-8 -top-10 text-gray-400 bg-gray-200 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700 rounded-[11px] transition-colors">
+          <Edit className="w-4 h-4" />
+        </button>
       </div>
       
       <div className="space-y-3">

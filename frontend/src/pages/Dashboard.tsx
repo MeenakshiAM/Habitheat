@@ -2,7 +2,7 @@ import SelfCareTip from "../components/SelfCareTip";
 import React, {useState, useEffect} from "react"; // Import useEffect
 import {Plus, Search, Archive, Settings, Filter} from "lucide-react"; // Import Settings and Filter icons
 import {Habit, SortOption, FilterOption, AdvancedFilter} from "../types";
-import {HabitCard} from "../components/HabitCard";
+import { HabitCard } from "../components/HabitCard";
 import {QuickActions} from "../components/QuickActions";
 import {AdvancedFilterModal} from "../components/AdvancedFilterModal";
 import {FilterSummary} from "../components/FilterSummary";
@@ -25,6 +25,7 @@ interface DashboardProps {
   onMarkToday: (habitId: string) => void;
   onSaveTemplate: (habit: Habit) => void;
   onArchiveHabit: (habitId: string) => void;
+  onEditHabit: (habit: Habit) => void;
 }
 
 // Define IDs for your widgets (MUST match 'id' in WidgetSettingsModal.tsx's availableWidgets)
@@ -40,7 +41,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onHabitClick,
   onMarkToday,
   onArchiveHabit,
-  onSaveTemplate
+  onSaveTemplate,
+  onEditHabit
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("name");
@@ -442,6 +444,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               onSaveTemplate={() => onSaveTemplate(habit)}
               onArchive={() => onArchiveHabit(habit.id)}
               showArchiveButton={!showArchived}
+              onEdit={() => onEditHabit(habit)}
             />
           ))}
         </div>
