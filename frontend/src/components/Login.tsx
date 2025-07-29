@@ -79,7 +79,11 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup, onLoginSuccess }) => {
     password: ''
   });
 
-  const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/auth';
+  //const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL || '/api/auth';
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
+    ? `${import.meta.env.VITE_API_BASE_URL}/api/auth`
+    : '/api/auth';
+
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
