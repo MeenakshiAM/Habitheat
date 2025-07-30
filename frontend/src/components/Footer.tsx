@@ -63,7 +63,7 @@ export const Footer = () => {
       {/* Bottom line */}
       <div className="border-t border-gray-200 dark:border-gray-700 text-center py-4 text-xs">
         <p>
-          © {new Date().getFullYear()} Habit Heat — Built with ❤️ by the community
+          © {new Date().getFullYear()} Habit Heat 
         </p>
       </div>
     </footer>
