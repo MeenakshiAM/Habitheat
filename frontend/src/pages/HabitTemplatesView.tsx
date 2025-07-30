@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Clock, Target, Lightbulb, Plus, Trash2, Share2 } from 'lucide-react';
 import { HabitTemplate } from '../types';
 import { HABIT_TEMPLATES, getTemplatesByCategory } from '../utils/habitTemplates';
+import { motion, AnimatePresence } from 'framer-motion'; // Animation: Import Framer Motion
 
 interface HabitTemplatesViewProps {
   onBack: () => void;
@@ -65,50 +66,148 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
       ? selectedTemplate.tips.filter(tip => tip.trim()) 
       : ["Stay determined!"]);
     return (
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      <motion.div 
+        // Animation: Template details modal entrance
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="max-w-2xl mx-auto px-4 py-6"
+      >
         <div className="flex justify-between py-2 items-center">
-          <button
+          {/* Animation: Back button with hover effects */}
+          <motion.button
             onClick={() => setSelectedTemplate(null)}
             className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-6"
+            whileHover={{ 
+              x: -5,
+              transition: { duration: 0.15 }
+            }}
+            whileTap={{ 
+              scale: 0.95,
+              transition: { duration: 0.05 }
+            }}
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Templates</span>
-          </button>
-          <button
+          </motion.button>
+          {/* Animation: Share button with hover effects */}
+          <motion.button
             onClick={(e) => { e.stopPropagation(); handleShareTemplate(selectedTemplate); }}
             className="p-4 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+            whileHover={{ 
+              scale: 1.15,
+              transition: { duration: 0.2 }
+            }}
+            whileTap={{ 
+              scale: 0.95,
+              transition: { duration: 0.05 }
+            }}
           >
             <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-          </button>
+          </motion.button>
         </div>
         
-
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700">
+        {/* Animation: Template details card with enhanced entrance */}
+        <motion.div 
+          className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700"
+          initial={{ opacity: 0, y: 30, scale: 0.95, rotateY: -5 }}
+          animate={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
+          transition={{ 
+            duration: 0.6, 
+            ease: [0.25, 0.46, 0.45, 0.94],
+            type: "spring",
+            stiffness: 80,
+            damping: 12
+          }}
+          whileHover={{ 
+            scale: 1.02,
+            rotateY: 2,
+            transition: { duration: 0.3, ease: "easeOut" }
+          }}
+        >
           <div className="flex items-center gap-4 mb-6">
-            <span className="text-4xl">{selectedTemplate.emoji}</span>
+            {/* Animation: Template emoji with entrance */}
+            <motion.span 
+              className="text-4xl"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ 
+                duration: 0.6,
+                ease: "easeOut",
+                delay: 0.2
+              }}
+            >
+              {selectedTemplate.emoji}
+            </motion.span>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <motion.h1 
+                className="text-2xl font-bold text-gray-900 dark:text-white"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
                 {selectedTemplate.name}
-              </h1>
-              <div className="flex items-center gap-3 mt-2">
+              </motion.h1>
+              <motion.div 
+                className="flex items-center gap-3 mt-2"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+              >
                 <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-sm">
                   {selectedTemplate.category}
                 </span>
                 <span className={`px-2 py-1 rounded-full text-sm font-medium ${getDifficultyColor(selectedTemplate.difficulty)}`}>
                   {selectedTemplate.difficulty}
                 </span>
-              </div>
+              </motion.div>
             </div>
           </div>
 
           <div className="space-y-6">
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.5 }}
+            >
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
               <p className="text-gray-600 dark:text-gray-400">{selectedTemplate.description}</p>
-            </div>
+            </motion.div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+            {/* Animation: Stats grid with staggered entrance */}
+            <motion.div 
+              className="grid md:grid-cols-2 gap-6"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.1,
+                    delayChildren: 0.6,
+                  },
+                },
+              }}
+            >
+              <motion.div 
+                className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"
+                variants={{
+                  hidden: { opacity: 0, x: -20 },
+                  visible: { 
+                    opacity: 1, 
+                    x: 0,
+                    transition: { duration: 0.3, ease: "easeOut" }
+                  },
+                }}
+                whileHover={{ 
+                  scale: 1.05,
+                  y: -8,
+                  rotateY: 3,
+                  boxShadow: "0 15px 35px rgba(0,0,0,0.1)",
+                  transition: { duration: 0.3, ease: "easeOut" }
+                }}
+              >
                 <Clock className="w-5 h-5 text-blue-500" />
                 <div>
                   <div className="font-medium text-gray-900 dark:text-white">
@@ -116,9 +215,26 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
                   </div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">Estimated time</div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+              <motion.div 
+                className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"
+                variants={{
+                  hidden: { opacity: 0, x: 20 },
+                  visible: { 
+                    opacity: 1, 
+                    x: 0,
+                    transition: { duration: 0.3, ease: "easeOut" }
+                  },
+                }}
+                whileHover={{ 
+                  scale: 1.05,
+                  y: -8,
+                  rotateY: -3,
+                  boxShadow: "0 15px 35px rgba(0,0,0,0.1)",
+                  transition: { duration: 0.3, ease: "easeOut" }
+                }}
+              >
                 <Target className="w-5 h-5 text-green-500" />
                 <div>
                   <div className="font-medium text-gray-900 dark:text-white">
@@ -126,69 +242,150 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
                   </div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">Recommended frequency</div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.8 }}
+            >
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <Lightbulb className="w-5 h-5 text-yellow-500" />
                 Tips for Success
               </h3>
               <ul className="space-y-2">
                 {tipsToShow.map((tip, index) => (
-                  <li key={index} className="flex items-start gap-3">
+                  <motion.li 
+                    key={index} 
+                    className="flex items-start gap-3"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.9 + index * 0.1 }}
+                  >
                     <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
                     <span className="text-gray-600 dark:text-gray-400">{tip}</span>
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
+            {/* Animation: Motivational quote with enhanced entrance */}
             {selectedTemplate.motivationalQuote?.trim() && (
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+              <motion.div 
+                className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border border-blue-100 dark:border-blue-800"
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.5, delay: 1.0 }}
+                whileHover={{ 
+                  scale: 1.05,
+                  y: -5,
+                  rotateY: 2,
+                  boxShadow: "0 10px 25px rgba(59, 130, 246, 0.2)",
+                  transition: { duration: 0.3, ease: "easeOut" }
+                }}
+              >
                 <p className="text-blue-800 dark:text-blue-200 font-medium italic">
                   "{selectedTemplate.motivationalQuote}"
                 </p>
-              </div>
+              </motion.div>
             )}
 
-
-            <button
+            {/* Animation: Use template button with enhanced hover effects */}
+            <motion.button
               onClick={() => onUseTemplate(selectedTemplate)}
               className="w-full px-6 py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 1.1 }}
+              whileHover={{ 
+                scale: 1.03,
+                y: -3,
+                boxShadow: "0 10px 25px rgba(59, 130, 246, 0.4)",
+                transition: { duration: 0.3, ease: "easeOut" }
+              }}
+              whileTap={{ 
+                scale: 0.98,
+                transition: { duration: 0.05 }
+              }}
             >
               <Plus className="w-5 h-5" />
               Use This Template
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+                         </motion.button>
+           </div>
+         </motion.div>
+       </motion.div>
+     );
+   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <button
+    <motion.div 
+      // Animation: Page entrance with fade and slide
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+      className="max-w-6xl mx-auto px-4 py-6"
+    >
+      {/* Animation: Back button with hover effects */}
+      <motion.button
         onClick={onBack}
         className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-6"
+        whileHover={{ 
+          x: -5,
+          transition: { duration: 0.15 }
+        }}
+        whileTap={{ 
+          scale: 0.95,
+          transition: { duration: 0.05 }
+        }}
       >
         <ArrowLeft className="w-5 h-5" />
         <span>Back to Dashboard</span>
-      </button>
+      </motion.button>
 
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      {/* Animation: Page heading with staggered text entrance */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="mb-8"
+      >
+        <motion.h2 
+          className="text-2xl font-bold text-gray-900 dark:text-white mb-2"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           Habit Templates
-        </h2>
-        <p className="text-gray-500 dark:text-gray-400">
+        </motion.h2>
+        <motion.p 
+          className="text-gray-500 dark:text-gray-400"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           Get started quickly with proven habit templates
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {categories.map((category) => (
-          <button
+      {/* Animation: Category filter buttons with staggered entrance */}
+      <motion.div 
+        className="flex flex-wrap gap-2 mb-6"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.05,
+              delayChildren: 0.4,
+            },
+          },
+        }}
+      >
+        {categories.map((category, index) => (
+          <motion.button
             key={category}
             onClick={() => setSelectedCategory(category)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
@@ -196,42 +393,135 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
+            variants={{
+              hidden: { opacity: 0, y: 20, scale: 0.8 },
+              visible: { 
+                opacity: 1, 
+                y: 0, 
+                scale: 1,
+                transition: { duration: 0.3, ease: "easeOut" }
+              },
+            }}
+            whileHover={{ 
+              scale: 1.1,
+              y: -2,
+              transition: { duration: 0.2 }
+            }}
+            whileTap={{ 
+              scale: 0.95,
+              transition: { duration: 0.05 }
+            }}
           >
             {category === 'all' ? 'All Categories' : category}
-          </button>
+          </motion.button>
         ))}
-      </div>
+      </motion.div>
 
-      {/* Templates Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTemplates.map((template) => {
+      {/* Animation: Templates grid with staggered entrance */}
+      <motion.div 
+        className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+              delayChildren: 0.6,
+            },
+          },
+        }}
+      >
+        {filteredTemplates.map((template, index) => {
           const isCustom = userTemplates.some(t => t.id === template.id);
           return (
-            <div
-              key={template.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all relative"
-            >
-              {/* Top-right action icons */}
-              <div className="absolute top-3 right-3 flex gap-2">
-                <button
+                         <motion.div
+               key={template.id}
+               className="relative"
+               variants={{
+                 hidden: { opacity: 0, y: 30, scale: 0.95 },
+                 visible: { 
+                   opacity: 1, 
+                   y: 0, 
+                   scale: 1,
+                   transition: { duration: 0.4, ease: "easeOut" }
+                 },
+               }}
+               whileHover={{ 
+                 y: -8, 
+                 scale: 1.02,
+                 transition: { duration: 0.3, ease: "easeOut" }
+               }}
+               whileTap={{ 
+                 scale: 0.98,
+                 transition: { duration: 0.05 }
+               }}
+             >
+                               <motion.div 
+                  className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 relative"
+                  initial={{ opacity: 0, scale: 0.95, rotateY: -5 }}
+                  animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                    type: "spring",
+                    stiffness: 80,
+                    damping: 12
+                  }}
+                  whileHover={{ 
+                    scale: 1.02,
+                    rotateY: 2,
+                    transition: { duration: 0.3, ease: "easeOut" }
+                  }}
+                >
+              {/* Animation: Top-right action icons */}
+              <div className="absolute top-3 right-3 flex gap-2 z-10">
+                <motion.button
                   onClick={(e) => { e.stopPropagation(); handleShareTemplate(template); }}
                   className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                  whileHover={{ 
+                    scale: 1.2,
+                    transition: { duration: 0.2 }
+                  }}
+                  whileTap={{ 
+                    scale: 0.9,
+                    transition: { duration: 0.05 }
+                  }}
                 >
                   <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                </button>
+                </motion.button>
                 {isCustom && (
-                  <button
+                  <motion.button
                     onClick={(e) => { e.stopPropagation(); handleDeleteTemplate(template.id); }}
                     className="p-2 rounded-full bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800"
+                    whileHover={{ 
+                      scale: 1.2,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ 
+                      scale: 0.9,
+                      transition: { duration: 0.05 }
+                    }}
                   >
                     <Trash2 className="w-4 h-4 text-red-600 dark:text-red-300" />
-                  </button>
+                  </motion.button>
                 )}
               </div>
 
               <div onClick={() => setSelectedTemplate(template)}>
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">{template.emoji}</span>
+                  {/* Animation: Template emoji with enhanced hover effect */}
+                  <motion.span 
+                    className="text-3xl"
+                    whileHover={{ 
+                      scale: 1.2,
+                      rotate: 10,
+                      transition: { duration: 0.2 }
+                    }}
+                  >
+                    {template.emoji}
+                  </motion.span>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 dark:text-white truncate">
                       {template.name}
@@ -261,11 +551,12 @@ export const HabitTemplatesView: React.FC<HabitTemplatesViewProps> = ({ onBack, 
                     <span>{template.daysPerWeek}/week</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
+                             </div>
+                </motion.div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </motion.div>
+    );
+  };
