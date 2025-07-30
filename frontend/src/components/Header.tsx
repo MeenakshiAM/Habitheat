@@ -67,109 +67,100 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
 
   return (
     <>
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
+      {/* Header with slide-down animation on mount */}
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm animate-slide-down">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* <AnimatePresence>
-              {currentView !== 'dashboard' && (
-                <motion.button
-                  key="back-button"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.25 }}
-                  onClick={() => navigate(-1)}
-                  className="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  aria-label="Back"
-                >
-                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
-                </motion.button>
-              )}
-            </AnimatePresence> */}
-
-            {/* Logo - Clickable and Responsive */}
+            {/* Logo - Clickable and Responsive with hover animations */}
             <button 
               onClick={handleLogoClick}
-              className="flex items-center gap-3 hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-1"
+              className="flex items-center gap-3 hover:opacity-80 transition-all duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-1 group"
               aria-label="Go to dashboard"
             >
-              <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex-shrink-0">
-                <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              {/* Logo icon with pulse animation and hover effects */}
+              <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex-shrink-0 transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-lg animate-pulse">
+                <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-white transition-transform duration-300 ease-in-out group-hover:rotate-12" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
                   Habit Heat
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
                   Track your daily habits
                 </p>
               </div>
-              {/* Mobile-only compact title */}
-              <div className="sm:hidden">
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+              {/* Mobile-only compact title with fade-in animation */}
+              <div className="sm:hidden animate-fade-in">
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white transition-colors duration-300">
                   Habit Heat
                 </h1>
               </div>
             </button>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation with stagger animation */}
             <nav className="hidden lg:flex items-center gap-1">
-              {navItems.map(({ view, icon: Icon, label  }) => (
+              {navItems.map(({ view, icon: Icon, label  }, index) => (
                 <button
                   key={view}
-
                   onClick={() => onViewChange(view)}
-                  className={`flex flex-col items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 min-h-[44px] ${
-                    currentView === view
-                      ? 'bg-orange-200 dark:bg-blue-900/50 text-orange-700 dark:text-blue-300 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
+                  className={`flex flex-col items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out min-h-[44px] hover:scale-105 animate-fade-in-up`}
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <Icon className={` w-4 h-4 flex-shrink-0 `} />
-                  <span className="hidden md:inline whitespace-nowrap">{label}</span>
+                  <Icon className={`w-4 h-4 flex-shrink-0 transition-all duration-300 ease-in-out hover:rotate-12 ${
+                    currentView === view
+                      ? 'text-orange-700 dark:text-blue-300 animate-pulse'
+                      : 'text-gray-600 dark:text-gray-400'
+                  }`} />
+                  <span className="hidden md:inline whitespace-nowrap transition-colors duration-300">{label}</span>
+                  {/* Active state with slide-up animation */}
+                  <div className={`w-full h-1 rounded-full transition-all duration-300 ease-in-out ${
+                    currentView === view
+                      ? 'bg-orange-500 dark:bg-blue-500 animate-slide-up'
+                      : 'bg-transparent'
+                  }`} />
                 </button>
               ))}
             </nav>
 
-            {/* Right Side Controls */}
-            <div className="flex items-center gap-2">
-              {/* Theme Toggle */}
+            {/* Right Side Controls with fade-in animation */}
+            <div className="flex items-center gap-2 animate-fade-in-up-delayed">
+              {/* Theme Toggle with rotation animation */}
               <button
                 onClick={onThemeToggle}
-                className="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 ease-in-out hover:scale-110 hover:rotate-180 min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 aria-label="Toggle theme"
               >
                 {theme === 'light' ? (
-                  <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
+                  <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300 transition-all duration-300 ease-in-out" />
                 ) : (
-                  <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
+                  <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300 transition-all duration-300 ease-in-out" />
                 )}
               </button>
 
-              {/* Logout Button */}
+              {/* Logout Button with shake animation on hover */}
               {onLogout && (
                 <button
                   onClick={onLogout}
-                  className="hidden lg:flex p-2 sm:p-3 rounded-full bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors min-h-[44px] min-w-[44px] items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  className="hidden lg:flex p-2 sm:p-3 rounded-full bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/40 transition-all duration-300 ease-in-out hover:scale-110 hover:animate-shake min-h-[44px] min-w-[44px] items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   aria-label="Logout"
                   title="Logout"
                 >
-                  <LogOut className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400" />
+                  <LogOut className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400 transition-transform duration-300 ease-in-out hover:translate-x-1" />
                 </button>
               )}
 
-              {/* Mobile Hamburger Menu */}
+              {/* Mobile Hamburger Menu with morphing animation */}
               <button
                 ref={hamburgerRef}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="lg:hidden p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 ease-in-out hover:scale-110 min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 aria-label="Toggle navigation menu"
                 aria-expanded={isMobileMenuOpen}
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <X className="w-5 h-5 text-gray-600 dark:text-gray-300 transition-all duration-300 ease-in-out animate-rotate-in" />
                 ) : (
-                  <Menu className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <Menu className="w-5 h-5 text-gray-600 dark:text-gray-300 transition-all duration-300 ease-in-out" />
                 )}
               </button>
             </div>
@@ -177,74 +168,79 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay with slide-in animation */}
       {isMobileMenuOpen && (
         <>
-          {/* Backdrop */}
-          <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity" />
+          {/* Backdrop with fade-in animation */}
+          <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50 transition-all duration-300 ease-in-out animate-fade-in" />
           
-          {/* Sidebar */}
+          {/* Sidebar with slide-in animation */}
           <div 
             ref={mobileMenuRef}
-            className="lg:hidden fixed top-0 right-0 z-50 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-xl transform transition-transform"
+            className="lg:hidden fixed top-0 right-0 z-50 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-xl transform transition-all duration-300 ease-in-out animate-slide-in-right"
           >
             <div className="flex flex-col h-full">
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              {/* Header with fade-in animation */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 animate-fade-in-up">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl">
-                    <Flame className="w-5 h-5 text-white" />
+                  {/* Logo with pulse animation */}
+                  <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl animate-pulse">
+                    <Flame className="w-5 h-5 text-white transition-transform duration-300 ease-in-out hover:rotate-12" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white transition-colors duration-300">
                       Navigation
                     </h2>
                   </div>
                 </div>
+                {/* Close button with scale animation */}
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 ease-in-out hover:scale-110 min-h-[44px] min-w-[44px] flex items-center justify-center"
                   aria-label="Close menu"
                 >
-                  <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <X className="w-5 h-5 text-gray-600 dark:text-gray-300 transition-transform duration-300 ease-in-out hover:rotate-90" />
                 </button>
               </div>
 
-              {/* Navigation Items */}
+              {/* Navigation Items with stagger animation */}
               <nav className="flex-1 px-4 py-6 overflow-y-auto">
                 <div className="space-y-2">
-                  {navItems.map(({ view, icon: Icon, label }) => (
+                  {navItems.map(({ view, icon: Icon, label }, index) => (
                     <button
                       key={view}
                       onClick={() => handleViewChange(view)}
-                      className={`w-full flex items-center gap-4 px-4 py-4 rounded-xl text-left font-medium transition-all duration-200 min-h-[56px] ${
-                        currentView === view
-                          ? 'bg-orange-200 dark:bg-blue-900/50 text-orange-700 dark:text-blue-300 shadow-sm'
-                          : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
-                      }`}
+                      className={`w-full flex items-center gap-4 px-4 py-4 rounded-xl text-left font-medium transition-all duration-300 ease-in-out hover:scale-105 min-h-[56px] animate-fade-in-up`}
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <Icon className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-base">{label}</span>
+                      <Icon className="w-5 h-5 flex-shrink-0 transition-all duration-300 ease-in-out hover:rotate-12" />
+                      <span className="text-base transition-colors duration-300">{label}</span>
+                      {/* Active indicator with slide animation */}
+                      <div className={`ml-auto w-2 h-2 rounded-full transition-all duration-300 ease-in-out ${
+                        currentView === view
+                          ? 'bg-orange-500 dark:bg-blue-500 animate-pulse'
+                          : 'bg-transparent'
+                      }`} />
                     </button>
                   ))}
                 </div>
               </nav>
 
-              {/* Footer */}
-              <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+              {/* Footer with fade-in animation */}
+              <div className="p-4 border-t border-gray-200 dark:border-gray-700 animate-fade-in-up-delayed">
                 {onLogout && (
                   <button
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       onLogout();
                     }}
-                    className="w-full flex items-center gap-4 px-4 py-3 mb-4 rounded-xl text-left font-medium transition-all duration-200 min-h-[48px] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    className="w-full flex items-center gap-4 px-4 py-3 mb-4 rounded-xl text-left font-medium transition-all duration-300 ease-in-out hover:scale-105 min-h-[48px] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 animate-fade-in-up"
                   >
-                    <LogOut className="w-5 h-5 flex-shrink-0" />
+                    <LogOut className="w-5 h-5 flex-shrink-0 transition-transform duration-300 ease-in-out hover:translate-x-1" />
                     <span className="text-base">Logout</span>
                   </button>
                 )}
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center transition-colors duration-300">
                   Habit Heat - Track your daily habits
                 </p>
               </div>
@@ -252,6 +248,115 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
           </div>
         </>
       )}
+
+      {/* Custom CSS for animations */}
+      <style>{`
+        /* Slide-down animation for header on mount */
+        .animate-slide-down {
+          animation: slideDown 0.6s ease-out;
+        }
+
+        /* Fade-in animation for elements */
+        .animate-fade-in {
+          animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Fade-in-up animation with delays */
+        .animate-fade-in-up {
+          animation: fadeInUp 0.6s ease-out;
+        }
+
+        .animate-fade-in-up-delayed {
+          animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        /* Slide-in-right animation for mobile menu */
+        .animate-slide-in-right {
+          animation: slideInRight 0.3s ease-out;
+        }
+
+        /* Slide-up animation for active indicators */
+        .animate-slide-up {
+          animation: slideUp 0.3s ease-out;
+        }
+
+        /* Rotate-in animation for close button */
+        .animate-rotate-in {
+          animation: rotateIn 0.3s ease-out;
+        }
+
+        /* Shake animation for logout button */
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
+        }
+
+        /* Keyframe definitions */
+        @keyframes slideDown {
+          from { 
+            opacity: 0; 
+            transform: translateY(-20px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(20px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+
+        @keyframes slideInRight {
+          from { 
+            opacity: 0; 
+            transform: translateX(100%); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateX(0); 
+          }
+        }
+
+        @keyframes slideUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(10px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+
+        @keyframes rotateIn {
+          from { 
+            opacity: 0; 
+            transform: rotate(-90deg); 
+          }
+          to { 
+            opacity: 1; 
+            transform: rotate(0deg); 
+          }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+      `}</style>
     </>
   );
 };
