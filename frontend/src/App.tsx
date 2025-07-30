@@ -11,7 +11,6 @@ import { ChallengesView } from './pages/ChallengesView';
 import { MoodTracker } from './pages/MoodTracker';
 import { HabitTemplatesView } from './pages/HabitTemplatesView';
 import { AchievementNotification } from './components/AchievementNotification';
-import Landingpage  from './components/Landingpage';
 import NotFound from './pages/NotFound';
 import Login from './components/Login';
 import Signup from './components/Signup';
@@ -44,7 +43,7 @@ function App() {
     dismissAchievement
   } = useHabits();
   
-  const [currentView, setCurrentView] = useState<View>('landingpage');
+  const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSaveTemplateOpen, setIsSaveTemplateOpen] = useState(false);
@@ -79,78 +78,59 @@ function App() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     setIsAuthenticated(false);
-    setCurrentView('landingpage');
+    setCurrentView('dashboard');
     setSelectedHabit(null);
-    window.history.pushState({}, '', '/');
   };
 
   // URL-based routing for production/vercel
   useEffect(() => {
+    if (!isAuthenticated) return; // Don't handle routing if not authenticated
+
     const handleRouting = () => {
       const path = window.location.pathname;
-      const publicRoutes = ['/'];
-      const protectedRoutes = ['/dashboard', '/insights', '/achievements', '/challenges', '/mood', '/templates', '/profile'];
-      
-      if (path === '/') {
-        setCurrentView('landingpage');
-      } else if (protectedRoutes.includes(path)) {
-        if (isAuthenticated) {
-          // Handle protected routes for authenticated users
-          if (path === '/dashboard') {
-            setCurrentView('dashboard');
-          } else if (path === '/insights') {
-            setCurrentView('insights');
-          } else if (path === '/achievements') {
-            setCurrentView('achievements');
-          } else if (path === '/challenges') {
-            setCurrentView('challenges');
-          } else if (path === '/mood') {
-            setCurrentView('mood');
-          } else if (path === '/templates') {
-            setCurrentView('templates');
-          } else if (path === '/profile') {
-            setCurrentView('profile');
-          }
-        } else {
-          // Redirect to landing page if not authenticated 
-          window.history.pushState({}, '', '/');
-          setCurrentView('landingpage');
-        }
-      } else {
-        // Invalid route
+      const validRoutes = [
+        '/',
+        '/dashboard',
+        '/insights', 
+        '/achievements',
+        '/challenges',
+        '/mood',
+        '/templates',
+        '/profile'
+      ];
+
+      if (path === '/' || path === '/dashboard') {
+        setCurrentView('dashboard');
+      } else if (path === '/insights') {
+        setCurrentView('insights');
+      } else if (path === '/achievements') {
+        setCurrentView('achievements');
+      } else if (path === '/challenges') {
+        setCurrentView('challenges');
+      } else if (path === '/mood') {
+        setCurrentView('mood');
+      } else if (path === '/templates') {
+        setCurrentView('templates');
+      } else if (path === '/profile') {
+        setCurrentView('profile');
+      } else if (!validRoutes.includes(path)) {
         setCurrentView('not-found');
       }
     };
 
-    // Only run routing after loading is complete
-    if (!isLoading) {
-      handleRouting();
-    }
+    handleRouting();
 
     const handlePopState = () => {
-      if (!isLoading) {
-        handleRouting();
-      }
+      handleRouting();
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated]);
 
   const navigateToView = (view: Exclude<View, 'not-found' | 'habit-detail' | 'add-habit' | 'social'>) => {
-    // Check if user needs to be authenticated for this view
-    const protectedViews = ['dashboard', 'insights', 'achievements', 'challenges', 'mood', 'templates', 'profile'];
-    
-    if (protectedViews.includes(view) && !isAuthenticated) {
-      // Redirect to landing page if trying to access protected view without authentication
-      window.history.pushState({}, '', '/');
-      setCurrentView('landingpage');
-      return;
-    }
-
     const routes: Record<string, string> = {
-      landingpage: '/',
-      dashboard: '/dashboard',
+      dashboard: '/',
       insights: '/insights',
       achievements: '/achievements', 
       challenges: '/challenges',
@@ -166,16 +146,16 @@ function App() {
     }
   };
 
-  const getHeaderView = (view: View): 'landingpage'|'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates' => {
+  const getHeaderView = (view: View): 'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates' | 'profile' => {
     if (['not-found', 'habit-detail', 'add-habit', 'social'].includes(view)) {
       return 'dashboard';
     }
-    return view as 'landingpage'|'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates';
+    return view as 'dashboard' | 'insights' | 'achievements' | 'challenges' | 'mood' | 'templates' | 'profile';
   };
 
   const handleNavigateHome = () => {
     window.history.pushState({}, '', '/');
-    setCurrentView('landingpage');
+    setCurrentView('dashboard');
     setSelectedHabit(null);
   };
 
@@ -185,7 +165,7 @@ function App() {
   };
 
   const handleBackToDashboard = () => {
-    window.history.pushState({}, '', '/dashboard');
+    window.history.pushState({}, '', '/');
     setCurrentView('dashboard');
     setSelectedHabit(null);
   };
@@ -211,7 +191,7 @@ function App() {
 
   const handleUseTemplate = (template: HabitTemplate) => {
     addHabitFromTemplate(template);
-    navigateToView('dashboard');
+    handleNavigateHome();
   };
 
   const handleDeleteHabit = () => {
@@ -252,6 +232,7 @@ function App() {
     setTemplates(updated);
     localStorage.setItem('habit-heat-custom-templates', JSON.stringify(updated));
   };
+
 
   const handleArchiveHabit = (habitId?: string) => {
     const targetHabitId = habitId || selectedHabit?.id;
@@ -307,13 +288,6 @@ function App() {
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
     setCurrentView('dashboard');
-    window.history.pushState({}, '', '/dashboard');
-  };
-
-  // Handle get started button click from landing page
-  const handleGetStarted = () => {
-    setAuthView('signup');
-    setCurrentView('auth');
   };
 
   // Update selected habit when habits change
@@ -338,45 +312,36 @@ function App() {
     );
   }
 
-  // Show authentication screens only when not authenticated AND currentView is 'auth'
-  if (!isAuthenticated && currentView === 'auth') {
+  // Show authentication screens if not authenticated
+  if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <>
         {authView === 'login' ? (
           <Login 
             onSwitchToSignup={() => setAuthView('signup')}
             onLoginSuccess={handleLoginSuccess}
-            onBackToLanding={() => setCurrentView('landingpage')}
           />
         ) : (
           <Signup 
             onSwitchToLogin={() => setAuthView('login')}
-            onBackToLanding={() => setCurrentView('landingpage')}
           />
         )}
-      </div>
+      </>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      {/* Show header only for authenticated users on protected routes */}
-      {isAuthenticated && currentView !== 'landingpage' && (
-        <Header 
-          theme={theme} 
-          currentView={getHeaderView(currentView)}
-          onThemeToggle={toggleTheme}
-          onViewChange={(view) => navigateToView(view)}
-          onLogout={handleLogout}
-        />
-      )}
+      <Header 
+        theme={theme} 
+        currentView={getHeaderView(currentView)}
+        onThemeToggle={toggleTheme}
+        onViewChange={(view) => navigateToView(view)}
+        onLogout={handleLogout}
+      />
       
       {currentView === 'not-found' && (
         <NotFound onNavigateHome={handleNavigateHome} />
-      )}
-
-      {currentView === 'landingpage' && (
-        <Landingpage handleGetStarted={handleGetStarted} />
       )}
 
       {currentView === 'dashboard' && (
@@ -416,12 +381,13 @@ function App() {
         />
       )}
 
+
       {currentView === 'insights' && (
         <InsightsView habits={habits} />
       )}
 
       {currentView === 'achievements' && (
-        <AchievementsView achievements={achievements} allHabits={habits} />
+        <AchievementsView achievements={achievements} />
       )}
 
       {currentView === 'challenges' && (
@@ -478,6 +444,7 @@ function App() {
 
       <Footer /> 
     </div>
+
   );
 }
 

@@ -13,10 +13,34 @@ interface HeaderProps {
   onLogout?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggle, onViewChange, onLogout }) => {
+export const Header: React.FC<HeaderProps> = ({
+  theme,
+  currentView,
+  onThemeToggle,
+  onViewChange,
+  onLogout,
+}) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
+
+  // Scroll bg transition logic
+  const [scrolled, setScrolled] = useState(false);
+  // Shake animation index for nav icons
+  const [shakeIndex, setShakeIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (shakeIndex !== null) {
+      const timer = setTimeout(() => setShakeIndex(null), 420);
+      return () => clearTimeout(timer);
+    }
+  }, [shakeIndex]);
 
   const navItems = [
     { view: 'dashboard' as View, icon: Flame, label: 'Habits' },
@@ -25,10 +49,10 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
     { view: 'challenges' as View, icon: Target, label: 'Challenges' },
     { view: 'mood' as View, icon: Smile, label: 'Mood' },
     { view: 'templates' as View, icon: BookOpen, label: 'Templates' },
-    { view: 'profile' as View, icon: User, label: 'Profile'},
+    { view: 'profile' as View, icon: User, label: 'Profile' },
   ];
 
-  // Handle outside click to close mobile menu
+  // Close mobile menu on outside click
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (
@@ -41,25 +65,24 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
         setIsMobileMenuOpen(false);
       }
     };
-
     if (isMobileMenuOpen) {
       document.addEventListener('mousedown', handleOutsideClick);
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      document.body.style.overflow = 'hidden';
     }
-
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
       document.body.style.overflow = 'unset';
     };
   }, [isMobileMenuOpen]);
 
-  // Handle view change and close mobile menu
-  const handleViewChange = (view: View) => {
+  // Handle nav item click: update view, close menu, and trigger shake animation
+  const handleViewChange = (view: View, idx: number) => {
     onViewChange(view);
     setIsMobileMenuOpen(false);
+    setShakeIndex(idx);
   };
 
-  // Handle logo click
+  // Handle logo click: go to dashboard and close menu
   const handleLogoClick = () => {
     onViewChange('dashboard');
     setIsMobileMenuOpen(false);
@@ -67,8 +90,15 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
 
   return (
     <>
-      {/* Header with slide-down animation on mount */}
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm animate-slide-down">
+      <header
+        className={`
+          sticky top-0 z-50 transition-all duration-300
+          ${scrolled
+            ? 'backdrop-blur-md bg-gradient-to-r from-orange-100/80 via-white/60 to-orange-200/80 dark:from-blue-900/80 dark:via-slate-900/70 dark:to-blue-950/80 shadow-xl border-b border-orange-200 dark:border-blue-900'
+            : 'bg-white dark:bg-gray-900 border-b border-transparent'
+          } animate-slide-down
+        `}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo - Clickable and Responsive with hover animations */}
@@ -99,20 +129,23 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
 
             {/* Desktop Navigation with stagger animation */}
             <nav className="hidden lg:flex items-center gap-1">
-              {navItems.map(({ view, icon: Icon, label  }, index) => (
+              {navItems.map(({ view, icon: Icon, label }, idx) => (
                 <button
                   key={view}
-                  onClick={() => onViewChange(view)}
+                  onClick={() => handleViewChange(view, idx)}
                   className={`flex flex-col items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out min-h-[44px] hover:scale-105 animate-fade-in-up`}
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  style={{ animationDelay: `${idx * 100}ms` }}
                 >
-                  <Icon className={`w-4 h-4 flex-shrink-0 transition-all duration-300 ease-in-out hover:rotate-12 ${
-                    currentView === view
-                      ? 'text-orange-700 dark:text-blue-300 animate-pulse'
-                      : 'text-gray-600 dark:text-gray-400'
-                  }`} />
+                  {/* Shake icon animation added conditionally */}
+                  <span className={shakeIndex === idx ? 'shake-anim' : undefined}>
+                    <Icon className={`w-4 h-4 flex-shrink-0 transition-all duration-300 ease-in-out hover:rotate-12 ${
+                      currentView === view
+                        ? 'text-orange-700 dark:text-blue-300 animate-pulse'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`} />
+                  </span>
                   <span className="hidden md:inline whitespace-nowrap transition-colors duration-300">{label}</span>
-                  {/* Active state with slide-up animation */}
+                  {/* Active indicator bar */}
                   <div className={`w-full h-1 rounded-full transition-all duration-300 ease-in-out ${
                     currentView === view
                       ? 'bg-orange-500 dark:bg-blue-500 animate-slide-up'
@@ -171,9 +204,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
       {/* Mobile Menu Overlay with slide-in animation */}
       {isMobileMenuOpen && (
         <>
-          {/* Backdrop with fade-in animation */}
           <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50 transition-all duration-300 ease-in-out animate-fade-in" />
-          
           {/* Sidebar with slide-in animation */}
           <div 
             ref={mobileMenuRef}
@@ -203,19 +234,20 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
                 </button>
               </div>
 
-              {/* Navigation Items with stagger animation */}
+              {/* Navigation Items */}
               <nav className="flex-1 px-4 py-6 overflow-y-auto">
                 <div className="space-y-2">
-                  {navItems.map(({ view, icon: Icon, label }, index) => (
+                  {navItems.map(({ view, icon: Icon, label }, idx) => (
                     <button
                       key={view}
-                      onClick={() => handleViewChange(view)}
+                      onClick={() => handleViewChange(view, idx)}
                       className={`w-full flex items-center gap-4 px-4 py-4 rounded-xl text-left font-medium transition-all duration-300 ease-in-out hover:scale-105 min-h-[56px] animate-fade-in-up`}
-                      style={{ animationDelay: `${index * 100}ms` }}
+                      style={{ animationDelay: `${idx * 100}ms` }}
                     >
-                      <Icon className="w-5 h-5 flex-shrink-0 transition-all duration-300 ease-in-out hover:rotate-12" />
+                      <span className={shakeIndex === idx ? 'shake-anim' : undefined}>
+                        <Icon className="w-5 h-5 flex-shrink-0 transition-all duration-300 ease-in-out hover:rotate-12" />
+                      </span>
                       <span className="text-base transition-colors duration-300">{label}</span>
-                      {/* Active indicator with slide animation */}
                       <div className={`ml-auto w-2 h-2 rounded-full transition-all duration-300 ease-in-out ${
                         currentView === view
                           ? 'bg-orange-500 dark:bg-blue-500 animate-pulse'
@@ -249,7 +281,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
         </>
       )}
 
-      {/* Custom CSS for animations */}
+      {/* Custom CSS for animations including your shake */}
       <style>{`
         /* Slide-down animation for header on mount */
         .animate-slide-down {
@@ -288,6 +320,11 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
         /* Shake animation for logout button */
         .animate-shake {
           animation: shake 0.5s ease-in-out;
+        }
+
+        /* Your custom shake animation for nav icons triggered on click */
+        .shake-anim {
+          animation: shake-x 0.42s cubic-bezier(0.26, 0.77, 0.48, 1) both;
         }
 
         /* Keyframe definitions */
@@ -356,8 +393,14 @@ export const Header: React.FC<HeaderProps> = ({ theme, currentView, onThemeToggl
           25% { transform: translateX(-5px); }
           75% { transform: translateX(5px); }
         }
+
+        @keyframes shake-x {
+          10%, 90% { transform: translateX(-1px);}
+          20%, 80% { transform: translateX(2px);}
+          30%, 50%, 70% { transform: translateX(-4px);}
+          40%, 60% { transform: translateX(4px);}
+        }
       `}</style>
     </>
   );
 };
-
