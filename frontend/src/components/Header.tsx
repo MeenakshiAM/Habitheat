@@ -24,9 +24,9 @@ export const Header: React.FC<HeaderProps> = ({
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
 
-  // *** Scroll bg transition logic ***
+  // Scroll bg transition logic
   const [scrolled, setScrolled] = useState(false);
-  // *** Shake animation index for nav icons ***
+  // Shake animation index for nav icons
   const [shakeIndex, setShakeIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -107,6 +107,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="flex items-center gap-3 hover:opacity-80 transition-all duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-1 group"
               aria-label="Go to dashboard"
             >
+              {/* Logo icon with pulse animation and hover effects */}
               <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex-shrink-0 transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-lg animate-pulse">
                 <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-white transition-transform duration-300 ease-in-out group-hover:rotate-12" />
               </div>
@@ -118,6 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
                   Track your daily habits
                 </p>
               </div>
+              {/* Mobile-only compact title with fade-in animation */}
               <div className="sm:hidden animate-fade-in">
                 <h1 className="text-lg font-bold text-gray-900 dark:text-white transition-colors duration-300">
                   Habit Heat
@@ -143,6 +145,7 @@ export const Header: React.FC<HeaderProps> = ({
                     }`} />
                   </span>
                   <span className="hidden md:inline whitespace-nowrap transition-colors duration-300">{label}</span>
+                  {/* Active indicator bar */}
                   <div className={`w-full h-1 rounded-full transition-all duration-300 ease-in-out ${
                     currentView === view
                       ? 'bg-orange-500 dark:bg-blue-500 animate-slide-up'
@@ -202,13 +205,16 @@ export const Header: React.FC<HeaderProps> = ({
       {isMobileMenuOpen && (
         <>
           <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50 transition-all duration-300 ease-in-out animate-fade-in" />
+          {/* Sidebar with slide-in animation */}
           <div 
             ref={mobileMenuRef}
             className="lg:hidden fixed top-0 right-0 z-50 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-xl transform transition-all duration-300 ease-in-out animate-slide-in-right"
           >
             <div className="flex flex-col h-full">
+              {/* Header with fade-in animation */}
               <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 animate-fade-in-up">
                 <div className="flex items-center gap-3">
+                  {/* Logo with pulse animation */}
                   <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl animate-pulse">
                     <Flame className="w-5 h-5 text-white transition-transform duration-300 ease-in-out hover:rotate-12" />
                   </div>
@@ -218,6 +224,7 @@ export const Header: React.FC<HeaderProps> = ({
                     </h2>
                   </div>
                 </div>
+                {/* Close button with scale animation */}
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 ease-in-out hover:scale-110 min-h-[44px] min-w-[44px] flex items-center justify-center"
@@ -227,6 +234,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               </div>
 
+              {/* Navigation Items */}
               <nav className="flex-1 px-4 py-6 overflow-y-auto">
                 <div className="space-y-2">
                   {navItems.map(({ view, icon: Icon, label }, idx) => (
@@ -250,6 +258,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </nav>
 
+              {/* Footer with fade-in animation */}
               <div className="p-4 border-t border-gray-200 dark:border-gray-700 animate-fade-in-up-delayed">
                 {onLogout && (
                   <button
@@ -308,7 +317,7 @@ export const Header: React.FC<HeaderProps> = ({
           animation: rotateIn 0.3s ease-out;
         }
 
-        /* Shake animation for logout button and nav icons on click */
+        /* Shake animation for logout button */
         .animate-shake {
           animation: shake 0.5s ease-in-out;
         }
