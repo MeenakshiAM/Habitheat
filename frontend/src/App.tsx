@@ -4,6 +4,7 @@ import { Dashboard } from './pages/Dashboard';
 import { HabitDetail } from './components/HabitDetail';
 import { AddHabitModal } from './components/AddHabitModal';
 import { SaveAsTemplateModal } from './components/SaveAsTemplateModal';
+import { UpdateHabitModal } from './components/UpdateHabitModal';
 import { InsightsView } from './pages/InsightsView';
 import { AchievementsView } from './pages/AchievementsView';
 import { ChallengesView } from './pages/ChallengesView';
@@ -33,6 +34,7 @@ function App() {
     addHabitFromTemplate,
     deleteHabit, 
     archiveHabit,
+    updateHabit,
     toggleHabitCompletion, 
     markTodayComplete,
     addNote,
@@ -46,6 +48,7 @@ function App() {
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSaveTemplateOpen, setIsSaveTemplateOpen] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [habitToSave, setHabitToSave] = useState<Habit | null>(null);
   const [templates, setTemplates] = useState<HabitTemplate[]>([]);
   
@@ -377,14 +380,30 @@ function App() {
       )}
 
       {currentView === 'dashboard' && (
-        <Dashboard
-          habits={habits}
-          onAddHabit={handleAddHabit}
-          onHabitClick={handleHabitClick}
-          onMarkToday={handleMarkToday}
-          onSaveTemplate={handleSaveTemplateClick}
-          onArchiveHabit={handleArchiveHabit}
-        />
+        <>
+          <Dashboard
+            habits={habits}
+            onAddHabit={handleAddHabit}
+            onHabitClick={handleHabitClick}
+            onMarkToday={handleMarkToday}
+            onSaveTemplate={handleSaveTemplateClick}
+            onArchiveHabit={handleArchiveHabit}
+            onEditHabit={setEditingHabit}
+          />
+
+          <UpdateHabitModal
+            habit={editingHabit}
+            isOpen={!!editingHabit}
+            onClose={() => setEditingHabit(null)}
+            onSubmit={(updatedData) => {
+              if (!editingHabit) return;
+              const mergedHabit: Habit = { ...editingHabit, ...updatedData };
+              updateHabit(mergedHabit);
+              setEditingHabit(null);
+            }}
+          />
+        </>
+        
       )}
 
       {habitToSave && (
